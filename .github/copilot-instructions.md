@@ -1,6 +1,8 @@
 
 You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
 
+this proyect use node 24..  verify that use nvm with node 24 to avoid compatibility issues. for comands that require node in console.
+
 ## TypeScript Best Practices
 
 - Use strict type checking
@@ -52,3 +54,24 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Architecture & SOLID
+
+- Follow SOLID principles strictly, especially SRP and DIP.
+- Separate database schema (Dexie setup) from CRUD logic: `AppDatabase` defines the schema, `DatabaseService` implements operations.
+- Use abstract classes as contracts (e.g. `FileRepository`) so that state services depend on abstractions, not concrete implementations.
+- Register concrete implementations in `app.config.ts` using `{ provide: AbstractClass, useExisting: ConcreteService }`.
+- Prefer composition over inheritance for services that *use* a repository (inject it); only the concrete implementation class should *extend* the abstract repository.
+- Use TypeScript `enum` instead of string union types when a value set is used across multiple files.
+- Use `Array.prototype.toReversed()` / `toSorted()` instead of mutating methods (`reverse()`, `sort()`). Requires `target: ES2023` in `tsconfig.json`.
+- Document all public methods with JSDoc in Spanish.
+
+## Project Structure
+
+```
+src/app/core/
+  db/              ← AppDatabase (Dexie schema only)
+  models/          ← interfaces and enums
+  repositories/    ← abstract repository contracts
+  services/        ← concrete implementations + state services
+```
