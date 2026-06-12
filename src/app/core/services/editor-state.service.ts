@@ -1,14 +1,21 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, debounceTime } from 'rxjs';
 import { MarkdownFile } from '../models/markdown-file.model';
+import { ViewMode } from '../models/view-mode.enum';
 import { FileRepository } from '../repositories/file-repository';
+import { AUTOSAVE_DEBOUNCE_MS } from '../../shared/text.constants';
 
 @Injectable({ providedIn: 'root' })
 export class EditorStateService {
   private readonly repo = inject(FileRepository);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly contentChange$ = new Subject<string>();
 
   readonly files = signal<MarkdownFile[]>([]);
   readonly activeFileId = signal<string | null>(null);
   readonly isLoading = signal(false);
+  readonly viewMode = signal<ViewMode>(ViewMode.Code);
 
   /**
    * Archivo actualmente seleccionado, derivado de `files` y `activeFileId`.
@@ -19,6 +26,24 @@ export class EditorStateService {
 
   constructor() {
     this.loadFiles();
+    this.contentChange$
+      .pipe(debounceTime(AUTOSAVE_DEBOUNCE_MS), takeUntilDestroyed(this.destroyRef))
+      .subscribe((content) => this.updateActiveFile({ content }));
+  }
+
+  /**
+   * Alterna el modo de visualización entre código y preview.
+   */
+  toggleViewMode(): void {
+    this.viewMode.update((mode) => (mode === ViewMode.Code ? ViewMode.Preview : ViewMode.Code));
+  }
+
+  /**
+   * Encola un cambio de contenido para persistirlo con debounce (400ms).
+   * @param content Nuevo contenido Markdown del archivo activo.
+   */
+  updateContent(content: string): void {
+    this.contentChange$.next(content);
   }
 
   /**

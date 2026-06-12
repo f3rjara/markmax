@@ -1,0 +1,37 @@
+<div class="flex flex-col h-screen bg-neutral-950 text-neutral-100">
+  <!-- Toolbar -->
+  <header class="flex items-center justify-between px-4 py-2 border-b border-neutral-800 shrink-0">
+    <span class="text-sm font-medium text-neutral-400 truncate">
+      {{ editorState.activeFile()?.title ?? 'Sin título' }}
+    </span>
+    <button
+      type="button"
+      class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-neutral-800 hover:bg-neutral-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+      [attr.aria-pressed]="isPreviewMode()"
+      [attr.aria-label]="
+        isPreviewMode() ? 'Cambiar a modo código' : 'Cambiar a modo previsualización'
+      "
+      (click)="editorState.toggleViewMode()">
+      @if (isPreviewMode()) {
+        Código
+      } @else {
+        Previsualizar
+      }
+    </button>
+  </header>
+
+  <!-- Editor / Preview -->
+  <main class="flex-1 overflow-hidden">
+    @switch (editorState.viewMode()) {
+      @case (ViewMode.Code) {
+        <app-code-editor
+          class="h-full"
+          [content]="editorState.activeFile()?.content ?? ''"
+          (contentChange)="onContentChange($event)" />
+      }
+      @case (ViewMode.Preview) {
+        <app-markdown-preview class="h-full" [content]="editorState.activeFile()?.content ?? ''" />
+      }
+    }
+  </main>
+</div>
