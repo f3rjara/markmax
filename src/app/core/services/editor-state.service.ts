@@ -28,7 +28,17 @@ export class EditorStateService {
     this.loadFiles();
     this.contentChange$
       .pipe(debounceTime(AUTOSAVE_DEBOUNCE_MS), takeUntilDestroyed(this.destroyRef))
-      .subscribe((content) => this.updateActiveFile({ content }));
+      .subscribe((content) => {
+        const changes: Partial<Pick<MarkdownFile, 'title' | 'content'>> = { content };
+        const firstLine = content.split('\n')[0] ?? '';
+        if (firstLine.startsWith('# ')) {
+          const extracted = firstLine.slice(2).trim();
+          if (extracted) {
+            changes.title = extracted;
+          }
+        }
+        void this.updateActiveFile(changes);
+      });
   }
 
   /**

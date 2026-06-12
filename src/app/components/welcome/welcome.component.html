@@ -1,0 +1,34 @@
+<div class="flex flex-col items-center justify-center h-full w-full gap-8 p-8 text-center bg-mm-bg">
+  <!-- Ícono y título -->
+  <div class="flex flex-col items-center gap-3">
+    <div
+      class="flex items-center justify-center w-16 h-16 rounded-2xl bg-mm-surface border border-mm-border">
+      <app-icon name="file-text" [size]="32" class="text-mm-accent" />
+    </div>
+    <div>
+      <h1 class="text-2xl font-bold text-mm-text">MarkMax</h1>
+      <p class="text-sm text-mm-text-secondary mt-1">Tu editor Markdown local</p>
+    </div>
+  </div>
+
+  <!-- Advertencia sobre almacenamiento -->
+  <div
+    role="note"
+    aria-label="Aviso sobre almacenamiento local"
+    class="max-w-sm w-full bg-mm-surface border border-mm-border rounded-xl p-4 text-left text-sm">
+    <p class="font-semibold text-mm-text mb-1">Almacenamiento local</p>
+    <p class="text-mm-text-secondary leading-relaxed">
+      Los archivos se guardan en IndexedDB de tu navegador. Limpiar los datos del sitio o usar el
+      modo incógnito eliminará todos tus archivos.
+    </p>
+  </div>
+
+  <!-- Acción principal -->
+  <button
+    type="button"
+    class="flex items-center gap-2 px-5 py-2.5 bg-mm-accent hover:bg-mm-accent-hover text-white font-medium rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+    (click)="createFile()">
+    <app-icon name="plus" [size]="16" />
+    Crear primer archivo
+  </button>
+</div>

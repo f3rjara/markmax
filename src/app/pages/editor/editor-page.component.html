@@ -1,37 +1,113 @@
-<div class="flex flex-col h-screen bg-neutral-950 text-neutral-100">
-  <!-- Toolbar -->
-  <header class="flex items-center justify-between px-4 py-2 border-b border-neutral-800 shrink-0">
-    <span class="text-sm font-medium text-neutral-400 truncate">
-      {{ editorState.activeFile()?.title ?? 'Sin título' }}
-    </span>
-    <button
-      type="button"
-      class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-neutral-800 hover:bg-neutral-700 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-      [attr.aria-pressed]="isPreviewMode()"
-      [attr.aria-label]="
-        isPreviewMode() ? 'Cambiar a modo código' : 'Cambiar a modo previsualización'
-      "
-      (click)="editorState.toggleViewMode()">
-      @if (isPreviewMode()) {
-        Código
-      } @else {
-        Previsualizar
-      }
-    </button>
-  </header>
+<div class="flex h-screen bg-mm-bg text-mm-text overflow-hidden">
+  <!-- Sidebar con transición -->
+  <div
+    class="shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out"
+    [style.width]="sidebarOpen() ? '250px' : '0px'">
+    <app-sidebar (closeRequest)="toggleSidebar()" />
+  </div>
 
-  <!-- Editor / Preview -->
-  <main class="flex-1 overflow-hidden">
-    @switch (editorState.viewMode()) {
-      @case (ViewMode.Code) {
-        <app-code-editor
-          class="h-full"
-          [content]="editorState.activeFile()?.content ?? ''"
-          (contentChange)="onContentChange($event)" />
+  <!-- Área de contenido principal -->
+  <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
+    <!-- Cabecera -->
+    <header
+      class="flex items-center gap-4 px-5 h-15 bg-mm-sidebar border-b border-mm-border shrink-0">
+      <!-- Botón abrir sidebar (visible solo cuando está cerrado) -->
+      @if (!sidebarOpen()) {
+        <button
+          type="button"
+          title="Abrir panel lateral"
+          class="flex items-center justify-center w-8 h-8 rounded-md shrink-0 text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+          aria-label="Abrir panel lateral"
+          (click)="toggleSidebar()">
+          <app-icon name="panel-left" [size]="18" />
+        </button>
       }
-      @case (ViewMode.Preview) {
-        <app-markdown-preview class="h-full" [content]="editorState.activeFile()?.content ?? ''" />
+      @if (editorState.activeFile()) {
+        <!-- Título + indicador de autoguardado -->
+        <div class="flex flex-col min-w-0 flex-1">
+          <h1 class="text-sm font-semibold text-mm-text truncate leading-tight">
+            {{ activeTitle() }}
+          </h1>
+          <p class="flex items-center gap-1 text-xs text-mm-text-secondary leading-tight mt-0.5">
+            <app-icon name="check" [size]="11" class="text-mm-accent" />
+            Guardado local · {{ editorState.activeFile()?.updatedAt | relativeTime }}
+          </p>
+        </div>
+      } @else {
+        <div class="flex-1">
+          <h1 class="text-sm font-semibold text-mm-text-secondary">MarkMax</h1>
+        </div>
       }
-    }
-  </main>
+
+      <!-- Acciones del header -->
+      <div class="flex items-center gap-3 shrink-0">
+        <!-- Botón herramientas rápidas (off-canvas — próximamente) -->
+        @if (editorState.viewMode() === ViewMode.Code && editorState.activeFile()) {
+          <button
+            type="button"
+            class="flex items-center justify-center w-8 h-8 rounded-full border border-mm-border text-mm-text-secondary hover:text-mm-accent hover:border-mm-accent transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+            aria-label="Abrir herramientas rápidas"
+            (click)="openToolsPanel()">
+            <app-icon name="plus" [size]="16" />
+          </button>
+        }
+
+        <!-- Toggle code / view (solo con archivo activo) -->
+        @if (editorState.activeFile()) {
+          <div
+            class="flex items-center rounded-full border border-mm-border bg-mm-surface p-0.5"
+            role="group"
+            aria-label="Modo de visualización">
+            <button
+              type="button"
+              class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+              [class]="
+                editorState.viewMode() === ViewMode.Code
+                  ? 'bg-mm-accent text-white'
+                  : 'text-mm-text-secondary hover:text-mm-text'
+              "
+              [attr.aria-pressed]="editorState.viewMode() === ViewMode.Code"
+              (click)="setViewMode(ViewMode.Code)">
+              <app-icon name="code" [size]="13" />
+              code
+            </button>
+            <button
+              type="button"
+              class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+              [class]="
+                editorState.viewMode() === ViewMode.Preview
+                  ? 'bg-mm-accent text-white'
+                  : 'text-mm-text-secondary hover:text-mm-text'
+              "
+              [attr.aria-pressed]="editorState.viewMode() === ViewMode.Preview"
+              (click)="setViewMode(ViewMode.Preview)">
+              <app-icon name="eye" [size]="13" />
+              view
+            </button>
+          </div>
+        }
+      </div>
+    </header>
+
+    <!-- Contenido: bienvenida o editor/preview -->
+    <main class="flex-1 overflow-hidden" id="main-content">
+      @if (!editorState.activeFile()) {
+        <app-welcome />
+      } @else {
+        @switch (editorState.viewMode()) {
+          @case (ViewMode.Code) {
+            <app-code-editor
+              class="h-full"
+              [content]="editorState.activeFile()?.content ?? ''"
+              (contentChange)="onContentChange($event)" />
+          }
+          @case (ViewMode.Preview) {
+            <app-markdown-preview
+              class="h-full"
+              [content]="editorState.activeFile()?.content ?? ''" />
+          }
+        }
+      }
+    </main>
+  </div>
 </div>

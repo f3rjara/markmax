@@ -1,0 +1,90 @@
+<nav
+  id="sidebar-nav"
+  class="flex flex-col h-full bg-mm-sidebar border-r border-mm-border"
+  aria-label="Archivos">
+  <!-- Cabecera -->
+  <div class="flex items-center justify-between px-4 h-15 border-b border-mm-border shrink-0">
+    <span
+      class="text-xs font-semibold uppercase tracking-widest text-mm-text-secondary select-none">
+      MarkMax
+    </span>
+    <div class="flex items-center gap-1">
+      <button
+        type="button"
+        class="flex items-center justify-center w-7 h-7 rounded-md text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+        aria-label="Crear nuevo archivo"
+        (click)="createFile()">
+        <app-icon name="plus" [size]="16" />
+      </button>
+      <button
+        type="button"
+        title="Cerrar panel lateral"
+        class="flex items-center justify-center w-7 h-7 rounded-md text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+        aria-label="Cerrar panel lateral"
+        (click)="closeRequest.emit()">
+        <app-icon name="panel-left" [size]="16" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Búsqueda -->
+  <div class="px-3 py-2 shrink-0">
+    <label for="sidebar-search" class="sr-only">Buscar archivos</label>
+    <div class="relative">
+      <span
+        class="absolute left-2.5 top-1/2 -translate-y-1/2 text-mm-text-secondary pointer-events-none">
+        <app-icon name="search" [size]="14" />
+      </span>
+      <input
+        id="sidebar-search"
+        type="search"
+        placeholder="Buscar"
+        autocomplete="off"
+        class="w-full bg-mm-surface border border-mm-border rounded-md py-1.5 pl-8 pr-3 text-sm text-mm-text placeholder:text-mm-text-secondary focus:outline-1 focus:outline-mm-accent focus:border-mm-accent transition"
+        [value]="searchTerm()"
+        (input)="onSearch($event)" />
+    </div>
+  </div>
+
+  <!-- Lista de archivos -->
+  <div class="flex-1 overflow-y-auto">
+    @if (editorState.isLoading()) {
+      <p class="px-4 py-6 text-sm text-mm-text-secondary text-center" aria-live="polite">
+        Cargando...
+      </p>
+    } @else {
+      <div class="px-4 pt-3 pb-1">
+        <span class="text-xs font-medium uppercase tracking-wider text-mm-text-secondary">
+          Recientes
+        </span>
+      </div>
+      <ul role="list" aria-label="Archivos recientes">
+        @for (file of filteredFiles(); track file.id) {
+          <li>
+            <button
+              type="button"
+              class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-left transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-mm-accent"
+              [class]="
+                isActive(file.id)
+                  ? 'bg-mm-surface text-mm-text font-medium'
+                  : 'text-mm-text-secondary hover:bg-mm-surface hover:text-mm-text'
+              "
+              [attr.aria-current]="isActive(file.id) ? 'page' : null"
+              (click)="selectFile(file.id)">
+              <app-icon name="file-text" [size]="14" />
+              <span class="truncate">{{ file.title }}</span>
+            </button>
+          </li>
+        } @empty {
+          <li class="px-4 py-6 text-sm text-mm-text-secondary text-center">
+            @if (searchTerm()) {
+              Sin resultados para "{{ searchTerm() }}"
+            } @else {
+              No hay archivos aún
+            }
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</nav>

@@ -1,3 +1,57 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* Tipografía personalizada para el preview Markdown */
+.prose-mm {
+  --tw-prose-body: #e2dcea;
+  --tw-prose-headings: #c084fc;
+  --tw-prose-lead: #b8aec8;
+  --tw-prose-links: #a855f7;
+  --tw-prose-bold: #f0eaf8;
+  --tw-prose-counters: #9d93a8;
+  --tw-prose-bullets: #6d6378;
+  --tw-prose-hr: #4a4055;
+  --tw-prose-quotes: #c084fc;
+  --tw-prose-quote-borders: #6d28d9;
+  --tw-prose-captions: #9d93a8;
+  --tw-prose-code: #e879f9;
+  --tw-prose-pre-code: #e2dcea;
+  --tw-prose-pre-bg: #1e1a24;
+  --tw-prose-th-borders: #4a4055;
+  --tw-prose-td-borders: #3a3145;
+}
+
+.prose-mm :is(h1, h2, h3, h4, h5, h6) {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.prose-mm h1 { font-size: 1.875rem; margin-top: 0; border-bottom: 1px solid #4a4055; padding-bottom: 0.4em; }
+.prose-mm h2 { font-size: 1.375rem; border-bottom: 1px solid #3a3145; padding-bottom: 0.3em; }
+.prose-mm h3 { font-size: 1.15rem; }
+.prose-mm h4 { font-size: 1rem; }
+.prose-mm h5 { font-size: 0.9rem; }
+.prose-mm h6 { font-size: 0.85rem; color: #9d93a8; }
+
+.prose-mm p { line-height: 1.8; margin-top: 1em; margin-bottom: 1em; }
+
+.prose-mm code:not(pre code) {
+  background: #3a3145;
+  border-radius: 0.25rem;
+  padding: 0.15em 0.4em;
+  font-size: 0.875em;
+}
+
+@theme {
+  --color-mm-bg: #2d2534;
+  --color-mm-sidebar: #1e1a24;
+  --color-mm-surface: #3a3145;
+  --color-mm-surface-hover: #453a52;
+  --color-mm-accent: #a855f7;
+  --color-mm-accent-hover: #c084fc;
+  --color-mm-border: #4a4055;
+  --color-mm-text: #f0eaf8;
+  --color-mm-text-secondary: #9d93a8;
+}
