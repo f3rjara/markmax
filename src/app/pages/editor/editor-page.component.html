@@ -10,7 +10,7 @@
   <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
     <!-- Cabecera -->
     <header
-      class="flex items-center gap-4 px-5 h-15 bg-mm-sidebar/80 backdrop-blur-md border-b border-violet-500/20 shrink-0">
+      class="relative z-10 flex items-center gap-4 px-5 h-15 bg-mm-sidebar/80 backdrop-blur-md border-b border-violet-500/20 shrink-0">
       <!-- Botón abrir sidebar (visible solo cuando está cerrado) -->
       @if (!sidebarOpen()) {
         <button
@@ -43,15 +43,28 @@
 
       <!-- Acciones del header -->
       <div class="flex items-center gap-3 shrink-0">
-        <!-- Botón herramientas rápidas (off-canvas — próximamente) -->
+        <!-- Botón herramientas rápidas + menú flotante -->
         @if (editorState.viewMode() === ViewMode.Code && editorState.activeFile()) {
-          <button
-            type="button"
-            class="flex items-center justify-center w-8 h-8 rounded-full border border-mm-border text-mm-text-secondary hover:text-mm-accent hover:border-mm-accent transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
-            aria-label="Abrir herramientas rápidas"
-            (click)="openToolsPanel()">
-            <app-icon name="plus" [size]="16" />
-          </button>
+          <div class="relative">
+            <button
+              type="button"
+              id="tools-menu-trigger"
+              class="flex items-center justify-center w-8 h-8 rounded-full border border-mm-border text-mm-text-secondary hover:text-mm-accent hover:border-mm-accent transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+              [class.border-mm-accent]="toolsMenuOpen()"
+              [class.text-mm-accent]="toolsMenuOpen()"
+              [attr.aria-expanded]="toolsMenuOpen()"
+              aria-haspopup="menu"
+              aria-label="Abrir herramientas rápidas"
+              (click)="openToolsPanel()">
+              <app-icon name="plus" [size]="16" />
+            </button>
+            @if (toolsMenuOpen()) {
+              <app-markdown-tools-menu
+                [activeFormat]="activeFormat()"
+                (toolSelected)="onToolSelected($event)"
+                (closeRequest)="closeToolsMenu()" />
+            }
+          </div>
         }
 
         <!-- Toggle code / view (solo con archivo activo) -->

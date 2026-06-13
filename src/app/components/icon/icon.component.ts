@@ -1,6 +1,30 @@
 import { Component, input } from '@angular/core';
 
-export type IconName = 'plus' | 'file-text' | 'search' | 'code' | 'eye' | 'check' | 'panel-left';
+export type IconName =
+  | 'plus'
+  | 'file-text'
+  | 'search'
+  | 'code'
+  | 'eye'
+  | 'check'
+  | 'panel-left'
+  | 'bold'
+  | 'italic'
+  | 'strikethrough'
+  | 'link'
+  | 'list'
+  | 'list-ordered'
+  | 'list-check'
+  | 'quote'
+  | 'code-inline'
+  | 'code-block'
+  | 'minus'
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'h5'
+  | 'h6';
 
 /**
  * Componente presentacional que renderiza iconos SVG inline.

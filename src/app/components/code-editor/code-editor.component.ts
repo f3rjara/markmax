@@ -13,8 +13,9 @@ import { basicSetup } from 'codemirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { EditorState } from '@codemirror/state';
+import { EditorState, SelectionRange } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
+import { MarkdownFormatType } from '../../core/models/markdown-format.model';
 
 @Component({
   selector: 'app-code-editor',
@@ -46,6 +47,185 @@ export class CodeEditorComponent implements OnDestroy {
           });
         }
       }
+    });
+  }
+
+  /**
+   * Aplica un formato Markdown en la posición del cursor o selección actual.
+   * Comportamiento por categoría:
+   * - Inline wrap: envuelve la selección o inserta placeholder
+   * - Line prefix: alterna el prefijo en la línea actual
+   * - Block insert: inserta bloque en nueva línea
+   */
+  applyFormat(type: MarkdownFormatType): void {
+    if (!this.view) return;
+
+    switch (type) {
+      case MarkdownFormatType.Bold:
+        this.applyInlineWrap('**', '**', 'texto en negrita');
+        break;
+      case MarkdownFormatType.Italic:
+        this.applyInlineWrap('*', '*', 'texto en cursiva');
+        break;
+      case MarkdownFormatType.Strikethrough:
+        this.applyInlineWrap('~~', '~~', 'texto tachado');
+        break;
+      case MarkdownFormatType.InlineCode:
+        this.applyInlineWrap('`', '`', 'código');
+        break;
+      case MarkdownFormatType.Link:
+        this.applyLink();
+        break;
+      case MarkdownFormatType.H1:
+        this.applyLinePrefix('# ');
+        break;
+      case MarkdownFormatType.H2:
+        this.applyLinePrefix('## ');
+        break;
+      case MarkdownFormatType.H3:
+        this.applyLinePrefix('### ');
+        break;
+      case MarkdownFormatType.H4:
+        this.applyLinePrefix('#### ');
+        break;
+      case MarkdownFormatType.H5:
+        this.applyLinePrefix('##### ');
+        break;
+      case MarkdownFormatType.H6:
+        this.applyLinePrefix('###### ');
+        break;
+      case MarkdownFormatType.UnorderedList:
+        this.applyLinePrefix('- ');
+        break;
+      case MarkdownFormatType.OrderedList:
+        this.applyLinePrefix('1. ');
+        break;
+      case MarkdownFormatType.TaskList:
+        this.applyLinePrefix('- [ ] ');
+        break;
+      case MarkdownFormatType.BlockQuote:
+        this.applyLinePrefix('> ');
+        break;
+      case MarkdownFormatType.CodeBlock:
+        this.insertBlock('```\n\n```', 4);
+        break;
+      case MarkdownFormatType.HR:
+        this.insertBlock('---', 3);
+        break;
+    }
+
+    this.view.focus();
+  }
+
+  /**
+   * Detecta el prefijo de la línea donde está el cursor y retorna
+   * el MarkdownFormatType correspondiente, o null si no hay prefijo reconocido.
+   */
+  getLineContext(): MarkdownFormatType | null {
+    if (!this.view) return null;
+
+    const { head } = this.view.state.selection.main;
+    const line = this.view.state.doc.lineAt(head);
+    const text = line.text;
+
+    if (/^###### /.test(text)) return MarkdownFormatType.H6;
+    if (/^##### /.test(text)) return MarkdownFormatType.H5;
+    if (/^#### /.test(text)) return MarkdownFormatType.H4;
+    if (/^### /.test(text)) return MarkdownFormatType.H3;
+    if (/^## /.test(text)) return MarkdownFormatType.H2;
+    if (/^# /.test(text)) return MarkdownFormatType.H1;
+    if (/^- \[ \] /.test(text) || /^- \[x\] /i.test(text)) return MarkdownFormatType.TaskList;
+    if (/^- /.test(text)) return MarkdownFormatType.UnorderedList;
+    if (/^\d+\. /.test(text)) return MarkdownFormatType.OrderedList;
+    if (/^> /.test(text)) return MarkdownFormatType.BlockQuote;
+
+    return null;
+  }
+
+  // ── Helpers privados ───────────────────────────────────────────────────────
+
+  private applyInlineWrap(open: string, close: string, placeholder: string): void {
+    if (!this.view) return;
+
+    const { from, to } = this.view.state.selection.main as SelectionRange;
+    const hasSelection = from !== to;
+    const selectedText = hasSelection ? this.view.state.sliceDoc(from, to) : placeholder;
+    const wrapped = `${open}${selectedText}${close}`;
+
+    this.view.dispatch({
+      changes: { from, to, insert: wrapped },
+      selection: hasSelection
+        ? { anchor: from, head: from + wrapped.length }
+        : { anchor: from + open.length, head: from + open.length + placeholder.length },
+    });
+  }
+
+  private applyLink(): void {
+    if (!this.view) return;
+
+    const { from, to } = this.view.state.selection.main as SelectionRange;
+    const hasSelection = from !== to;
+    const linkText = hasSelection ? this.view.state.sliceDoc(from, to) : 'texto del enlace';
+    const insert = `[${linkText}](url)`;
+
+    this.view.dispatch({
+      changes: { from, to, insert },
+      // Posicionar cursor sobre "url" para que el usuario lo reemplace
+      selection: {
+        anchor: from + linkText.length + 3,
+        head: from + linkText.length + 3 + 3,
+      },
+    });
+  }
+
+  private applyLinePrefix(prefix: string): void {
+    if (!this.view) return;
+
+    const { head } = this.view.state.selection.main;
+    const line = this.view.state.doc.lineAt(head);
+    const lineText = line.text;
+
+    // Detectar si la línea ya tiene algún prefijo de bloque conocido
+    const existingPrefixMatch = lineText.match(
+      /^(#{1,6} |> |- \[[ x]\] |- |\d+\. )/i
+    );
+
+    if (existingPrefixMatch) {
+      const existingPrefix = existingPrefixMatch[0];
+      if (existingPrefix === prefix) {
+        // Toggle: quitar el prefijo si ya está activo
+        this.view.dispatch({
+          changes: { from: line.from, to: line.from + existingPrefix.length, insert: '' },
+          selection: { anchor: Math.max(line.from, head - existingPrefix.length) },
+        });
+      } else {
+        // Reemplazar prefijo existente con el nuevo
+        this.view.dispatch({
+          changes: { from: line.from, to: line.from + existingPrefix.length, insert: prefix },
+          selection: { anchor: head - existingPrefix.length + prefix.length },
+        });
+      }
+    } else {
+      // Sin prefijo existente: insertar al inicio de la línea
+      this.view.dispatch({
+        changes: { from: line.from, insert: prefix },
+        selection: { anchor: head + prefix.length },
+      });
+    }
+  }
+
+  private insertBlock(block: string, cursorOffset: number): void {
+    if (!this.view) return;
+
+    const { head } = this.view.state.selection.main;
+    const line = this.view.state.doc.lineAt(head);
+
+    const insertPos = line.to;
+    const insert = `\n${block}`;
+
+    this.view.dispatch({
+      changes: { from: insertPos, insert },
+      selection: { anchor: insertPos + cursorOffset },
     });
   }
 
