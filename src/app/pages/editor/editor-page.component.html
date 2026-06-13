@@ -10,7 +10,7 @@
   <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
     <!-- Cabecera -->
     <header
-      class="flex items-center gap-4 px-5 h-15 bg-mm-sidebar border-b border-mm-border shrink-0">
+      class="flex items-center gap-4 px-5 h-15 bg-mm-sidebar/80 backdrop-blur-md border-b border-violet-500/20 shrink-0">
       <!-- Botón abrir sidebar (visible solo cuando está cerrado) -->
       @if (!sidebarOpen()) {
         <button
@@ -35,7 +35,9 @@
         </div>
       } @else {
         <div class="flex-1">
-          <h1 class="text-sm font-semibold text-mm-text-secondary">MarkMax</h1>
+          <span class="text-xs font-semibold uppercase tracking-widest text-mm-text-secondary">
+            MarkMax
+          </span>
         </div>
       }
 
@@ -55,7 +57,7 @@
         <!-- Toggle code / view (solo con archivo activo) -->
         @if (editorState.activeFile()) {
           <div
-            class="flex items-center rounded-full border border-mm-border bg-mm-surface p-0.5"
+            class="flex items-center rounded-full border border-violet-500/20 bg-mm-surface p-0.5"
             role="group"
             aria-label="Modo de visualización">
             <button
@@ -63,7 +65,7 @@
               class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
               [class]="
                 editorState.viewMode() === ViewMode.Code
-                  ? 'bg-mm-accent text-white'
+                  ? 'mm-btn-primary text-white'
                   : 'text-mm-text-secondary hover:text-mm-text'
               "
               [attr.aria-pressed]="editorState.viewMode() === ViewMode.Code"
@@ -76,7 +78,7 @@
               class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
               [class]="
                 editorState.viewMode() === ViewMode.Preview
-                  ? 'bg-mm-accent text-white'
+                  ? 'mm-btn-primary text-white'
                   : 'text-mm-text-secondary hover:text-mm-text'
               "
               [attr.aria-pressed]="editorState.viewMode() === ViewMode.Preview"
@@ -90,7 +92,7 @@
     </header>
 
     <!-- Contenido: bienvenida o editor/preview -->
-    <main class="flex-1 overflow-hidden" id="main-content">
+    <main class="flex-1 overflow-hidden mm-glow-bg" id="main-content">
       @if (!editorState.activeFile()) {
         <app-welcome />
       } @else {

@@ -6,21 +6,21 @@
 /* Tipografía personalizada para el preview Markdown */
 .prose-mm {
   --tw-prose-body: #e2dcea;
-  --tw-prose-headings: #c084fc;
+  --tw-prose-headings: #a78bfa;
   --tw-prose-lead: #b8aec8;
-  --tw-prose-links: #a855f7;
+  --tw-prose-links: #8b5cf6;
   --tw-prose-bold: #f0eaf8;
   --tw-prose-counters: #9d93a8;
   --tw-prose-bullets: #6d6378;
-  --tw-prose-hr: #4a4055;
-  --tw-prose-quotes: #c084fc;
-  --tw-prose-quote-borders: #6d28d9;
+  --tw-prose-hr: rgba(139, 92, 246, 0.2);
+  --tw-prose-quotes: #a78bfa;
+  --tw-prose-quote-borders: #7c3aed;
   --tw-prose-captions: #9d93a8;
-  --tw-prose-code: #e879f9;
+  --tw-prose-code: #c4b5fd;
   --tw-prose-pre-code: #e2dcea;
-  --tw-prose-pre-bg: #1e1a24;
-  --tw-prose-th-borders: #4a4055;
-  --tw-prose-td-borders: #3a3145;
+  --tw-prose-pre-bg: #13111a;
+  --tw-prose-th-borders: rgba(139, 92, 246, 0.2);
+  --tw-prose-td-borders: rgba(139, 92, 246, 0.12);
 }
 
 .prose-mm :is(h1, h2, h3, h4, h5, h6) {
@@ -28,8 +28,8 @@
   letter-spacing: -0.01em;
 }
 
-.prose-mm h1 { font-size: 1.875rem; margin-top: 0; border-bottom: 1px solid #4a4055; padding-bottom: 0.4em; }
-.prose-mm h2 { font-size: 1.375rem; border-bottom: 1px solid #3a3145; padding-bottom: 0.3em; }
+.prose-mm h1 { font-size: 1.875rem; margin-top: 0; border-bottom: 1px solid rgba(139, 92, 246, 0.2); padding-bottom: 0.4em; }
+.prose-mm h2 { font-size: 1.375rem; border-bottom: 1px solid rgba(139, 92, 246, 0.12); padding-bottom: 0.3em; }
 .prose-mm h3 { font-size: 1.15rem; }
 .prose-mm h4 { font-size: 1rem; }
 .prose-mm h5 { font-size: 0.9rem; }
@@ -38,20 +38,96 @@
 .prose-mm p { line-height: 1.8; margin-top: 1em; margin-bottom: 1em; }
 
 .prose-mm code:not(pre code) {
-  background: #3a3145;
+  background: rgba(124, 58, 237, 0.2);
   border-radius: 0.25rem;
   padding: 0.15em 0.4em;
   font-size: 0.875em;
 }
 
 @theme {
-  --color-mm-bg: #2d2534;
-  --color-mm-sidebar: #1e1a24;
-  --color-mm-surface: #3a3145;
-  --color-mm-surface-hover: #453a52;
-  --color-mm-accent: #a855f7;
-  --color-mm-accent-hover: #c084fc;
-  --color-mm-border: #4a4055;
+  --color-mm-bg: #0f0e17;
+  --color-mm-sidebar: #13111a;
+  --color-mm-surface: #1c1926;
+  --color-mm-surface-hover: #2a2438;
+  --color-mm-accent: #7c3aed;
+  --color-mm-accent-hover: #8b5cf6;
+  --color-mm-accent-deep: #6d28d9;
+  --color-mm-border: rgba(139, 92, 246, 0.2);
   --color-mm-text: #f0eaf8;
   --color-mm-text-secondary: #9d93a8;
+}
+
+/* ── Glow radial para el panel central ── */
+.mm-glow-bg {
+  position: relative;
+}
+
+.mm-glow-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 35% at 50% 0%, rgba(124, 58, 237, 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 85% 90%, rgba(109, 40, 217, 0.06) 0%, transparent 65%);
+  z-index: 0;
+}
+
+.mm-glow-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Botón principal con gradiente morado ── */
+.mm-btn-primary {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35), 0 1px 4px rgba(0, 0, 0, 0.4);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+
+.mm-btn-primary:hover {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.45), 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Degradado ambiental del sidebar (flujo morado sutil) ── */
+.mm-sidebar-bg {
+  background:
+    radial-gradient(
+      ellipse 140% 50% at -20% 20%,
+      rgba(109, 40, 217, 0.09) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 100% 45% at 120% 75%,
+      rgba(124, 58, 237, 0.07) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 70% 35% at 50% 100%,
+      rgba(91, 33, 182, 0.06) 0%,
+      transparent 65%
+    ),
+    var(--color-mm-sidebar);
+}
+
+/* ── Luz ambiental del panel Welcome (detrás del contenido) ── */
+.mm-welcome-light {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 560px;
+  height: 420px;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(124, 58, 237, 0.11) 0%,
+    rgba(109, 40, 217, 0.07) 30%,
+    rgba(91, 33, 182, 0.03) 55%,
+    transparent 72%
+  );
+  filter: blur(32px);
+  z-index: 0;
 }

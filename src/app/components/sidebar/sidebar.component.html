@@ -1,13 +1,21 @@
 <nav
   id="sidebar-nav"
-  class="flex flex-col h-full bg-mm-sidebar border-r border-mm-border"
+  class="flex flex-col h-full mm-sidebar-bg border-r border-white/[0.06]"
   aria-label="Archivos">
   <!-- Cabecera -->
-  <div class="flex items-center justify-between px-4 h-15 border-b border-mm-border shrink-0">
-    <span
-      class="text-xs font-semibold uppercase tracking-widest text-mm-text-secondary select-none">
-      MarkMax
-    </span>
+  <div class="flex items-center justify-between px-4 h-15 border-b border-white/[0.06] shrink-0">
+    <div class="flex items-center gap-2 select-none">
+      <img
+        src="markmax.svg"
+        width="20"
+        height="20"
+        alt=""
+        aria-hidden="true"
+        class="object-contain shrink-0" />
+      <span class="text-xs font-semibold uppercase tracking-widest text-mm-text-secondary">
+        MarkMax
+      </span>
+    </div>
     <div class="flex items-center gap-1">
       <button
         type="button"
@@ -66,8 +74,8 @@
               class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-left transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-mm-accent"
               [class]="
                 isActive(file.id)
-                  ? 'bg-mm-surface text-mm-text font-medium'
-                  : 'text-mm-text-secondary hover:bg-mm-surface hover:text-mm-text'
+                  ? 'border-l-2 border-violet-500 bg-violet-900/20 text-mm-text font-medium pl-[14px]'
+                  : 'text-mm-text-secondary hover:bg-violet-900/30 hover:text-mm-text'
               "
               [attr.aria-current]="isActive(file.id) ? 'page' : null"
               (click)="selectFile(file.id)">

@@ -1,12 +1,23 @@
-<div class="flex flex-col items-center justify-center h-full w-full gap-8 p-8 text-center bg-mm-bg">
+<div
+  class="flex flex-col items-center justify-center h-full w-full gap-8 p-8 text-center bg-mm-bg relative overflow-hidden">
+  <!-- Luz ambiental detrás del contenido -->
+  <div class="mm-welcome-light" aria-hidden="true"></div>
   <!-- Ícono y título -->
-  <div class="flex flex-col items-center gap-3">
+  <div class="flex flex-col items-center gap-3 relative z-10">
     <div
-      class="flex items-center justify-center w-16 h-16 rounded-2xl bg-mm-surface border border-mm-border">
-      <app-icon name="file-text" [size]="32" class="text-mm-accent" />
+      class="flex items-center justify-center w-16 h-16 rounded-2xl bg-mm-surface border border-white/10 overflow-hidden">
+      <img
+        src="markmax.svg"
+        width="40"
+        height="40"
+        alt=""
+        aria-hidden="true"
+        class="object-contain" />
     </div>
     <div>
-      <h1 class="text-2xl font-bold text-mm-text">MarkMax</h1>
+      <h1 class="text-2xl font-bold font-semibold uppercase tracking-widest text-mm-text-secondary">
+        MarkMax
+      </h1>
       <p class="text-sm text-mm-text-secondary mt-1">Tu editor Markdown local</p>
     </div>
   </div>
@@ -15,18 +26,19 @@
   <div
     role="note"
     aria-label="Aviso sobre almacenamiento local"
-    class="max-w-sm w-full bg-mm-surface border border-mm-border rounded-xl p-4 text-left text-sm">
+    class="max-w-sm w-full bg-mm-surface border border-white/[0.07] rounded-xl p-4 text-left text-sm relative z-10">
     <p class="font-semibold text-mm-text mb-1">Almacenamiento local</p>
     <p class="text-mm-text-secondary leading-relaxed">
-      Los archivos se guardan en IndexedDB de tu navegador. Limpiar los datos del sitio o usar el
-      modo incógnito eliminará todos tus archivos.
+      Los archivos se guardan solo en este navegador. <br />
+      Si borras los datos de navegación, usas el modo incógnito o cambias de dispositivo, podrías
+      perder el acceso a ellos.
     </p>
   </div>
 
   <!-- Acción principal -->
   <button
     type="button"
-    class="flex items-center gap-2 px-5 py-2.5 bg-mm-accent hover:bg-mm-accent-hover text-white font-medium rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+    class="flex items-center gap-2 px-5 py-2.5 mm-btn-primary text-white font-medium rounded-full relative z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
     (click)="createFile()">
     <app-icon name="plus" [size]="16" />
     Crear primer archivo
