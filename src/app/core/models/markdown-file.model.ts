@@ -12,4 +12,6 @@ export interface MarkdownFile {
   updatedAt: number;
   status: FileStatus;
   excerpt?: string;
+  pinned?: boolean;
+  hasCustomTitle?: boolean;
 }

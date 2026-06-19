@@ -39,12 +39,14 @@ export class CodeEditorComponent implements OnDestroy {
 
     effect(() => {
       const newContent = this.content();
-      if (this.view && !this.isUpdatingFromOutside) {
+      if (this.view) {
         const current = this.view.state.doc.toString();
         if (current !== newContent) {
+          this.isUpdatingFromOutside = true;
           this.view.dispatch({
             changes: { from: 0, to: current.length, insert: newContent },
           });
+          this.isUpdatingFromOutside = false;
         }
       }
     });
@@ -186,9 +188,7 @@ export class CodeEditorComponent implements OnDestroy {
     const lineText = line.text;
 
     // Detectar si la línea ya tiene algún prefijo de bloque conocido
-    const existingPrefixMatch = lineText.match(
-      /^(#{1,6} |> |- \[[ x]\] |- |\d+\. )/i
-    );
+    const existingPrefixMatch = lineText.match(/^(#{1,6} |> |- \[[ x]\] |- |\d+\. )/i);
 
     if (existingPrefixMatch) {
       const existingPrefix = existingPrefixMatch[0];
@@ -237,10 +237,8 @@ export class CodeEditorComponent implements OnDestroy {
         markdown({ codeLanguages: languages }),
         oneDark,
         EditorView.updateListener.of((update) => {
-          if (update.docChanged) {
-            this.isUpdatingFromOutside = true;
+          if (update.docChanged && !this.isUpdatingFromOutside) {
             this.contentChange.emit(update.state.doc.toString());
-            this.isUpdatingFromOutside = false;
           }
         }),
         EditorView.theme({

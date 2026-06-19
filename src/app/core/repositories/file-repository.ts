@@ -34,7 +34,7 @@ export abstract class FileRepository {
    */
   abstract update(
     id: string,
-    changes: Partial<Pick<MarkdownFile, 'title' | 'content'>>,
+    changes: Partial<MarkdownFile>,
   ): Promise<void>;
 
   /**

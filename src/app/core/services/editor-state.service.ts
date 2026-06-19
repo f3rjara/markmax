@@ -29,12 +29,17 @@ export class EditorStateService {
     this.contentChange$
       .pipe(debounceTime(AUTOSAVE_DEBOUNCE_MS), takeUntilDestroyed(this.destroyRef))
       .subscribe((content) => {
-        const changes: Partial<Pick<MarkdownFile, 'title' | 'content'>> = { content };
-        const firstLine = content.split('\n')[0] ?? '';
-        if (firstLine.startsWith('# ')) {
-          const extracted = firstLine.slice(2).trim();
-          if (extracted) {
-            changes.title = extracted;
+        const activeFile = this.activeFile();
+        if (!activeFile) return;
+
+        const changes: Partial<MarkdownFile> = { content };
+        if (!activeFile.hasCustomTitle) {
+          const firstLine = content.split('\n')[0] ?? '';
+          if (firstLine.startsWith('# ')) {
+            const extracted = firstLine.slice(2).trim();
+            if (extracted) {
+              changes.title = extracted;
+            }
           }
         }
         void this.updateActiveFile(changes);
@@ -94,12 +99,37 @@ export class EditorStateService {
    * No hace nada si no hay archivo activo.
    * @param changes Campos a modificar.
    */
-  async updateActiveFile(changes: Partial<Pick<MarkdownFile, 'title' | 'content'>>): Promise<void> {
+  async updateActiveFile(changes: Partial<MarkdownFile>): Promise<void> {
     const id = this.activeFileId();
     if (!id) {
       return;
     }
     await this.repo.update(id, changes);
+    await this.loadFiles();
+  }
+
+  /**
+   * Alterna el estado de fijado (pin) de un archivo por su identificador.
+   * @param id Identificador del archivo.
+   */
+  async togglePinFile(id: string): Promise<void> {
+    const file = this.files().find((f) => f.id === id);
+    if (!file) {
+      return;
+    }
+    const pinned = !file.pinned;
+    await this.repo.update(id, { pinned });
+    await this.loadFiles();
+  }
+
+  /**
+   * Cambia el título de un archivo de manera explícita por el usuario y marca el archivo
+   * para evitar que su título sea sobreescrito automáticamente por el contenido del editor.
+   * @param id Identificador del archivo.
+   * @param newTitle Nuevo título del archivo.
+   */
+  async renameFile(id: string, newTitle: string): Promise<void> {
+    await this.repo.update(id, { title: newTitle, hasCustomTitle: true });
     await this.loadFiles();
   }
 

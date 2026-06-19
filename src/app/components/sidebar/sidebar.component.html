@@ -68,10 +68,10 @@
       </div>
       <ul role="list" aria-label="Archivos recientes">
         @for (file of filteredFiles(); track file.id) {
-          <li>
+          <li class="relative group" (contextmenu)="openMenuFromRightClick($event, file.id)">
             <button
               type="button"
-              class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-left transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-mm-accent"
+              class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-left transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-mm-accent pr-10"
               [class]="
                 isActive(file.id)
                   ? 'border-l-2 border-violet-500 bg-violet-900/20 text-mm-text font-medium pl-[14px]'
@@ -79,9 +79,38 @@
               "
               [attr.aria-current]="isActive(file.id) ? 'page' : null"
               (click)="selectFile(file.id)">
-              <app-icon name="file-text" [size]="14" />
-              <span class="truncate">{{ file.title }}</span>
+              @if (file.pinned) {
+                <app-icon name="pin" [size]="13" class="text-mm-accent rotate-45" />
+              } @else {
+                <app-icon name="file-text" [size]="14" />
+              }
+              
+              @if (editingFileId() === file.id) {
+                <input
+                  [id]="'rename-input-' + file.id"
+                  type="text"
+                  [value]="file.title"
+                  maxlength="60"
+                  (keydown.enter)="saveRename(file.id, renameInput.value)"
+                  (keydown.escape)="cancelRename()"
+                  (blur)="saveRename(file.id, renameInput.value)"
+                  (click)="$event.stopPropagation()"
+                  #renameInput
+                  class="flex-1 min-w-0 bg-mm-surface border border-violet-500/50 text-mm-text text-xs rounded px-1.5 py-0.5 focus:outline-none focus:border-mm-accent focus:ring-1 focus:ring-mm-accent transition" />
+              } @else {
+                <span class="truncate flex-1">{{ file.title }}</span>
+              }
             </button>
+
+            @if (editingFileId() !== file.id) {
+              <button
+                type="button"
+                class="file-options-trigger absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6 rounded text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface opacity-0 group-hover:opacity-100 focus:opacity-100 transition focus-visible:outline-2 focus-visible:outline-mm-accent"
+                aria-label="Opciones de archivo"
+                (click)="openMenu($event, file.id)">
+                <app-icon name="more-vertical" [size]="14" />
+              </button>
+            }
           </li>
         } @empty {
           <li class="px-4 py-6 text-sm text-mm-text-secondary text-center">
@@ -95,4 +124,68 @@
       </ul>
     }
   </div>
+
+  <!-- Menú Contextual flotante -->
+  @if (activeMenuFileId()) {
+    <div
+      class="sidebar-context-menu"
+      [style.top.px]="menuPosition().top"
+      [style.left.px]="menuPosition().left"
+      role="menu"
+      aria-label="Acciones de archivo">
+      
+      <button
+        type="button"
+        role="menuitem"
+        class="context-menu-item"
+        (click)="togglePin(activeMenuFileId()!)">
+        <app-icon name="pin" [size]="13" class="context-item-icon" />
+        <span>{{ isFilePinned(activeMenuFileId()) ? 'Desfijar' : 'Fijar' }}</span>
+      </button>
+
+      <button
+        type="button"
+        role="menuitem"
+        class="context-menu-item"
+        (click)="startRename(activeMenuFileId()!)">
+        <app-icon name="edit" [size]="13" class="context-item-icon" />
+        <span>Cambiar Nombre</span>
+      </button>
+
+      <div class="context-separator" role="separator"></div>
+
+      <button
+        type="button"
+        role="menuitem"
+        class="context-menu-item context-menu-item--disabled"
+        title="Próximamente"
+        (click)="$event.stopPropagation()">
+        <app-icon name="download" [size]="13" class="context-item-icon" />
+        <span class="flex-1">Descargar</span>
+        <span class="text-[10px] uppercase tracking-wider font-semibold opacity-40">Pronto</span>
+      </button>
+
+      <button
+        type="button"
+        role="menuitem"
+        class="context-menu-item context-menu-item--disabled"
+        title="Próximamente"
+        (click)="$event.stopPropagation()">
+        <app-icon name="archive" [size]="13" class="context-item-icon" />
+        <span class="flex-1">Archivar</span>
+        <span class="text-[10px] uppercase tracking-wider font-semibold opacity-40">Pronto</span>
+      </button>
+
+      <button
+        type="button"
+        role="menuitem"
+        class="context-menu-item context-menu-item--danger context-menu-item--disabled"
+        title="Próximamente"
+        (click)="$event.stopPropagation()">
+        <app-icon name="trash-2" [size]="13" class="context-item-icon" />
+        <span class="flex-1">Eliminar</span>
+        <span class="text-[10px] uppercase tracking-wider font-semibold opacity-40">Pronto</span>
+      </button>
+    </div>
+  }
 </nav>

@@ -22,7 +22,10 @@ export class DatabaseService extends FileRepository {
       .where('status')
       .equals(FileStatus.Active)
       .sortBy('updatedAt');
-    return results.toReversed();
+    const reversed = results.toReversed();
+    const pinned = reversed.filter((f) => f.pinned);
+    const unpinned = reversed.filter((f) => !f.pinned);
+    return [...pinned, ...unpinned];
   }
 
   /**
@@ -59,7 +62,7 @@ export class DatabaseService extends FileRepository {
    */
   async update(
     id: string,
-    changes: Partial<Pick<MarkdownFile, 'title' | 'content'>>,
+    changes: Partial<MarkdownFile>,
   ): Promise<void> {
     await this.db.files.update(id, { ...changes, updatedAt: Date.now() });
   }
