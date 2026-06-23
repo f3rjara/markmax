@@ -54,8 +54,8 @@
     </div>
   </div>
 
-  <!-- Lista de archivos -->
-  <div class="flex-1 overflow-y-auto">
+  <!-- Lista de archivos activos -->
+  <div class="flex-1 overflow-y-auto min-h-0">
     @if (editorState.isLoading()) {
       <p class="px-4 py-6 text-sm text-mm-text-secondary text-center" aria-live="polite">
         Cargando...
@@ -68,7 +68,7 @@
       </div>
       <ul role="list" aria-label="Archivos recientes">
         @for (file of filteredFiles(); track file.id) {
-          <li class="relative group" (contextmenu)="openMenuFromRightClick($event, file.id)">
+          <li class="relative group" (contextmenu)="openMenuFromRightClick($event, file.id, 'active')">
             <button
               type="button"
               class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-left transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-mm-accent pr-10"
@@ -84,7 +84,7 @@
               } @else {
                 <app-icon name="file-text" [size]="14" />
               }
-              
+
               @if (editingFileId() === file.id) {
                 <input
                   [id]="'rename-input-' + file.id"
@@ -107,7 +107,7 @@
                 type="button"
                 class="file-options-trigger absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6 rounded text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface opacity-0 group-hover:opacity-100 focus:opacity-100 transition focus-visible:outline-2 focus-visible:outline-mm-accent"
                 aria-label="Opciones de archivo"
-                (click)="openMenu($event, file.id)">
+                (click)="openMenu($event, file.id, 'active')">
                 <app-icon name="more-vertical" [size]="14" />
               </button>
             }
@@ -117,7 +117,7 @@
             @if (searchTerm()) {
               Sin resultados para "{{ searchTerm() }}"
             } @else {
-              No hay archivos aún
+              No hay archivos aun
             }
           </li>
         }
@@ -125,7 +125,127 @@
     }
   </div>
 
-  <!-- Menú Contextual flotante -->
+  <!-- ====== Seccion Archivados ====== -->
+  @if (editorState.archivedFiles().length > 0 || archivedExpanded()) {
+    <div class="sidebar-section">
+      <button
+        type="button"
+        class="sidebar-section-header w-full"
+        [attr.aria-expanded]="archivedExpanded()"
+        aria-controls="archived-list"
+        (click)="toggleArchived()">
+        <span class="sidebar-section-title">
+          <app-icon name="archive" [size]="12" />
+          Archivados
+          @if (editorState.archivedFiles().length > 0) {
+            <span class="sidebar-section-badge">{{ editorState.archivedFiles().length }}</span>
+          }
+        </span>
+        <app-icon
+          name="chevron-down"
+          [size]="12"
+          class="chevron-icon"
+          [class.chevron-icon--open]="archivedExpanded()" />
+      </button>
+
+      @if (archivedExpanded()) {
+        <ul
+          id="archived-list"
+          role="list"
+          aria-label="Archivos archivados"
+          class="sidebar-section-list">
+          @for (file of editorState.archivedFiles(); track file.id) {
+            <li
+              class="relative group"
+              (contextmenu)="openMenuFromRightClick($event, file.id, 'archived')">
+              <button
+                type="button"
+                class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-left text-mm-text-secondary hover:bg-violet-900/20 hover:text-mm-text transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-mm-accent pr-10">
+                <app-icon name="archive" [size]="13" class="shrink-0 opacity-60" />
+                <span class="truncate flex-1">{{ file.title }}</span>
+              </button>
+              <button
+                type="button"
+                class="file-options-trigger absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6 rounded text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface opacity-0 group-hover:opacity-100 focus:opacity-100 transition focus-visible:outline-2 focus-visible:outline-mm-accent"
+                aria-label="Opciones de archivo archivado"
+                (click)="openMenu($event, file.id, 'archived')">
+                <app-icon name="more-vertical" [size]="14" />
+              </button>
+            </li>
+          } @empty {
+            <li class="px-4 py-3 text-xs text-mm-text-secondary text-center opacity-60">
+              Sin archivos archivados
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+  <!-- ====== Seccion Eliminados ====== -->
+  @if (editorState.deletedFiles().length > 0 || deletedExpanded()) {
+    <div class="sidebar-section">
+      <button
+        type="button"
+        class="sidebar-section-header w-full"
+        [attr.aria-expanded]="deletedExpanded()"
+        aria-controls="deleted-list"
+        (click)="toggleDeleted()">
+        <span class="sidebar-section-title">
+          <app-icon name="trash-2" [size]="12" />
+          Eliminados
+          @if (editorState.deletedFiles().length > 0) {
+            <span class="sidebar-section-badge">{{ editorState.deletedFiles().length }}</span>
+          }
+        </span>
+        <app-icon
+          name="chevron-down"
+          [size]="12"
+          class="chevron-icon"
+          [class.chevron-icon--open]="deletedExpanded()" />
+      </button>
+
+      @if (deletedExpanded()) {
+        <ul
+          id="deleted-list"
+          role="list"
+          aria-label="Archivos en papelera"
+          class="sidebar-section-list">
+          @for (file of editorState.deletedFiles(); track file.id) {
+            <li
+              class="relative group"
+              (contextmenu)="openMenuFromRightClick($event, file.id, 'deleted')">
+              <button
+                type="button"
+                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-left text-mm-text-secondary hover:bg-red-900/10 hover:text-mm-text transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-mm-accent pr-10">
+                <app-icon name="trash-2" [size]="13" class="shrink-0 opacity-50" />
+                <span class="truncate flex-1 opacity-70">{{ file.title }}</span>
+                <span
+                  class="days-badge"
+                  [class.days-badge--urgent]="isUrgent(file.deletedAt)"
+                  [attr.aria-label]="'Vence en ' + daysLabel(file.deletedAt)">
+                  {{ daysLabel(file.deletedAt) }}
+                </span>
+              </button>
+              <button
+                type="button"
+                class="file-options-trigger absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6 rounded text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface opacity-0 group-hover:opacity-100 focus:opacity-100 transition focus-visible:outline-2 focus-visible:outline-mm-accent"
+                aria-label="Opciones de archivo eliminado"
+                (click)="openMenu($event, file.id, 'deleted')">
+                <app-icon name="more-vertical" [size]="14" />
+              </button>
+            </li>
+          } @empty {
+            <li class="px-4 py-3 text-xs text-mm-text-secondary text-center opacity-60">
+              La papelera esta vacia
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+  <!-- ====== Menu Contextual flotante ====== -->
   @if (activeMenuFileId()) {
     <div
       class="sidebar-context-menu"
@@ -133,59 +253,114 @@
       [style.left.px]="menuPosition().left"
       role="menu"
       aria-label="Acciones de archivo">
-      
-      <button
-        type="button"
-        role="menuitem"
-        class="context-menu-item"
-        (click)="togglePin(activeMenuFileId()!)">
-        <app-icon name="pin" [size]="13" class="context-item-icon" />
-        <span>{{ isFilePinned(activeMenuFileId()) ? 'Desfijar' : 'Fijar' }}</span>
-      </button>
 
-      <button
-        type="button"
-        role="menuitem"
-        class="context-menu-item"
-        (click)="startRename(activeMenuFileId()!)">
-        <app-icon name="edit" [size]="13" class="context-item-icon" />
-        <span>Cambiar Nombre</span>
-      </button>
+      @switch (menuSection()) {
 
-      <div class="context-separator" role="separator"></div>
+        <!-- Menu para archivos ACTIVOS -->
+        @case ('active') {
+          <button
+            type="button"
+            role="menuitem"
+            class="context-menu-item"
+            (click)="togglePin(activeMenuFileId()!)">
+            <app-icon name="pin" [size]="13" class="context-item-icon" />
+            <span>{{ isFilePinned(activeMenuFileId()) ? 'Desfijar' : 'Fijar' }}</span>
+          </button>
 
-      <button
-        type="button"
-        role="menuitem"
-        class="context-menu-item context-menu-item--disabled"
-        title="Próximamente"
-        (click)="$event.stopPropagation()">
-        <app-icon name="download" [size]="13" class="context-item-icon" />
-        <span class="flex-1">Descargar</span>
-        <span class="text-[10px] uppercase tracking-wider font-semibold opacity-40">Pronto</span>
-      </button>
+          <button
+            type="button"
+            role="menuitem"
+            class="context-menu-item"
+            (click)="startRename(activeMenuFileId()!)">
+            <app-icon name="edit" [size]="13" class="context-item-icon" />
+            <span>Renombrar</span>
+          </button>
 
-      <button
-        type="button"
-        role="menuitem"
-        class="context-menu-item context-menu-item--disabled"
-        title="Próximamente"
-        (click)="$event.stopPropagation()">
-        <app-icon name="archive" [size]="13" class="context-item-icon" />
-        <span class="flex-1">Archivar</span>
-        <span class="text-[10px] uppercase tracking-wider font-semibold opacity-40">Pronto</span>
-      </button>
+          <div class="context-separator" role="separator"></div>
 
-      <button
-        type="button"
-        role="menuitem"
-        class="context-menu-item context-menu-item--danger context-menu-item--disabled"
-        title="Próximamente"
-        (click)="$event.stopPropagation()">
-        <app-icon name="trash-2" [size]="13" class="context-item-icon" />
-        <span class="flex-1">Eliminar</span>
-        <span class="text-[10px] uppercase tracking-wider font-semibold opacity-40">Pronto</span>
-      </button>
+          <button
+            type="button"
+            role="menuitem"
+            class="context-menu-item"
+            (click)="downloadFile(activeMenuFileId()!)">
+            <app-icon name="download" [size]="13" class="context-item-icon" />
+            <span>Descargar</span>
+          </button>
+
+          <button
+            type="button"
+            role="menuitem"
+            class="context-menu-item"
+            (click)="archiveFile(activeMenuFileId()!)">
+            <app-icon name="archive" [size]="13" class="context-item-icon" />
+            <span>Archivar</span>
+          </button>
+
+          <button
+            type="button"
+            role="menuitem"
+            class="context-menu-item context-menu-item--danger"
+            (click)="trashFile(activeMenuFileId()!)">
+            <app-icon name="trash-2" [size]="13" class="context-item-icon" />
+            <span>Eliminar</span>
+          </button>
+        }
+
+        <!-- Menu para archivos ARCHIVADOS -->
+        @case ('archived') {
+          <button
+            type="button"
+            role="menuitem"
+            class="context-menu-item"
+            (click)="restoreFromArchive(activeMenuFileId()!)">
+            <app-icon name="rotate-ccw" [size]="13" class="context-item-icon" />
+            <span>Restaurar</span>
+          </button>
+
+          <div class="context-separator" role="separator"></div>
+
+          <button
+            type="button"
+            role="menuitem"
+            class="context-menu-item context-menu-item--danger"
+            (click)="trashFromArchive(activeMenuFileId()!)">
+            <app-icon name="trash-2" [size]="13" class="context-item-icon" />
+            <span>Eliminar</span>
+          </button>
+        }
+
+        <!-- Menu para archivos ELIMINADOS -->
+        @case ('deleted') {
+          <button
+            type="button"
+            role="menuitem"
+            class="context-menu-item"
+            (click)="restoreFromTrash(activeMenuFileId()!)">
+            <app-icon name="rotate-ccw" [size]="13" class="context-item-icon" />
+            <span>Restaurar</span>
+          </button>
+
+          <div class="context-separator" role="separator"></div>
+
+          <button
+            type="button"
+            role="menuitem"
+            class="context-menu-item context-menu-item--danger"
+            (click)="requestDeleteForever(activeMenuFileId()!)">
+            <app-icon name="trash-2" [size]="13" class="context-item-icon" />
+            <span>Eliminar definitivamente</span>
+          </button>
+        }
+      }
     </div>
+  }
+
+  <!-- ====== Dialogo de confirmacion ====== -->
+  @if (confirmDeleteId()) {
+    <app-confirm-dialog
+      [dialogId]="confirmDeleteId()!"
+      [fileName]="confirmDeleteName()"
+      (confirm)="confirmDeleteForever()"
+      (cancel)="cancelDeleteForever()" />
   }
 </nav>

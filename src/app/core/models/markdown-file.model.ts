@@ -14,4 +14,6 @@ export interface MarkdownFile {
   excerpt?: string;
   pinned?: boolean;
   hasCustomTitle?: boolean;
+  /** Timestamp (ms) en que fue enviado a la papelera. Usado para calcular el vencimiento de 5 dias. */
+  deletedAt?: number;
 }

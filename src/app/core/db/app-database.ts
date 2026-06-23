@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import Dexie, { Table } from 'dexie';
 import { MarkdownFile } from '../models/markdown-file.model';
-import { DB_NAME, DB_VERSION } from '../../shared/text.constants';
+import { DB_NAME } from '../../shared/text.constants';
 
 /**
  * Definición del esquema de la base de datos IndexedDB.
@@ -15,7 +15,11 @@ export class AppDatabase extends Dexie {
 
   constructor() {
     super(DB_NAME);
-    this.version(DB_VERSION).stores({
+    this.version(1).stores({
+      files: '&id, status',
+    });
+    // Version 2: agrega campo deletedAt (campo JS, no requiere indice nuevo).
+    this.version(2).stores({
       files: '&id, status',
     });
   }

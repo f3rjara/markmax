@@ -30,7 +30,14 @@ export type IconName =
   | 'edit'
   | 'download'
   | 'archive'
-  | 'trash-2';
+  | 'trash-2'
+  | 'chevron-down'
+  | 'rotate-ccw'
+  | 'x'
+  | 'check-circle'
+  | 'info'
+  | 'alert-triangle'
+  | 'alert-circle';
 
 /**
  * Componente presentacional que renderiza iconos SVG inline.

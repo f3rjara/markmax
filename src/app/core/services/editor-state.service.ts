@@ -13,6 +13,8 @@ export class EditorStateService {
   private readonly contentChange$ = new Subject<string>();
 
   readonly files = signal<MarkdownFile[]>([]);
+  readonly archivedFiles = signal<MarkdownFile[]>([]);
+  readonly deletedFiles = signal<MarkdownFile[]>([]);
   readonly activeFileId = signal<string | null>(null);
   readonly isLoading = signal(false);
   readonly viewMode = signal<ViewMode>(ViewMode.Code);
@@ -25,7 +27,7 @@ export class EditorStateService {
   );
 
   constructor() {
-    this.loadFiles();
+    this.loadAll();
     this.contentChange$
       .pipe(debounceTime(AUTOSAVE_DEBOUNCE_MS), takeUntilDestroyed(this.destroyRef))
       .subscribe((content) => {
@@ -62,7 +64,26 @@ export class EditorStateService {
   }
 
   /**
-   * Carga todos los archivos activos desde el repositorio y actualiza el signal `files`.
+   * Carga todos los archivos (activos, archivados y eliminados) en paralelo.
+   */
+  async loadAll(): Promise<void> {
+    this.isLoading.set(true);
+    try {
+      const [active, archived, deleted] = await Promise.all([
+        this.repo.getActive(),
+        this.repo.getArchived(),
+        this.repo.getDeleted(),
+      ]);
+      this.files.set(active);
+      this.archivedFiles.set(archived);
+      this.deletedFiles.set(deleted);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  /**
+   * Recarga solo la lista de archivos activos.
    */
   async loadFiles(): Promise<void> {
     this.isLoading.set(true);
@@ -72,6 +93,14 @@ export class EditorStateService {
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  /**
+   * Recarga los archivos eliminados (útil tras una purga automática).
+   */
+  async reloadDeleted(): Promise<void> {
+    const deleted = await this.repo.getDeleted();
+    this.deletedFiles.set(deleted);
   }
 
   /**
@@ -123,8 +152,7 @@ export class EditorStateService {
   }
 
   /**
-   * Cambia el título de un archivo de manera explícita por el usuario y marca el archivo
-   * para evitar que su título sea sobreescrito automáticamente por el contenido del editor.
+   * Cambia el título de un archivo de manera explícita por el usuario.
    * @param id Identificador del archivo.
    * @param newTitle Nuevo título del archivo.
    */
@@ -134,30 +162,46 @@ export class EditorStateService {
   }
 
   /**
-   * Mueve el archivo activo a la papelera y limpia la selección.
-   * No hace nada si no hay archivo activo.
+   * Archiva un archivo por su id (desde activos o papelera).
+   * Si el archivo estaba activo y seleccionado, limpia la selección.
+   * @param id Identificador del archivo.
    */
-  async trashActiveFile(): Promise<void> {
-    const id = this.activeFileId();
-    if (!id) {
-      return;
+  async archiveFile(id: string): Promise<void> {
+    await this.repo.archive(id);
+    if (this.activeFileId() === id) {
+      this.activeFileId.set(null);
     }
-    await this.repo.moveToTrash(id);
-    this.activeFileId.set(null);
-    await this.loadFiles();
+    await this.loadAll();
   }
 
   /**
-   * Archiva el archivo activo y limpia la selección.
-   * No hace nada si no hay archivo activo.
+   * Mueve un archivo a la papelera por su id.
+   * Si el archivo estaba activo y seleccionado, limpia la selección.
+   * @param id Identificador del archivo.
    */
-  async archiveActiveFile(): Promise<void> {
-    const id = this.activeFileId();
-    if (!id) {
-      return;
+  async trashFile(id: string): Promise<void> {
+    await this.repo.moveToTrash(id);
+    if (this.activeFileId() === id) {
+      this.activeFileId.set(null);
     }
-    await this.repo.archive(id);
-    this.activeFileId.set(null);
-    await this.loadFiles();
+    await this.loadAll();
+  }
+
+  /**
+   * Restaura un archivo archivado o eliminado al estado activo.
+   * @param id Identificador del archivo.
+   */
+  async restoreFile(id: string): Promise<void> {
+    await this.repo.restore(id);
+    await this.loadAll();
+  }
+
+  /**
+   * Elimina permanentemente un archivo de la base de datos.
+   * @param id Identificador del archivo.
+   */
+  async deleteFileForever(id: string): Promise<void> {
+    await this.repo.deleteForever(id);
+    await this.loadAll();
   }
 }
