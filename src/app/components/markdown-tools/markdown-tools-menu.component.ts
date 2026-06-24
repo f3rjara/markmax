@@ -14,6 +14,7 @@ const GROUP_ORDER: MarkdownToolGroup[] = [
   MarkdownToolGroup.Lists,
   MarkdownToolGroup.Blocks,
   MarkdownToolGroup.Headings,
+  MarkdownToolGroup.Tables,
 ];
 
 @Component({

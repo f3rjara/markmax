@@ -126,3 +126,9 @@
     </main>
   </div>
 </div>
+
+@if (tableBuilderOpen()) {
+  <app-table-builder
+    (tableInsert)="onTableInsert($event)"
+    (cancelRequest)="onTableCancel()" />
+}

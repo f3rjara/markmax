@@ -114,9 +114,38 @@ export class CodeEditorComponent implements OnDestroy {
       case MarkdownFormatType.HR:
         this.insertBlock('---', 3);
         break;
+      case MarkdownFormatType.Table:
+        // La tabla se inserta via insertRaw() desde el EditorPageComponent
+        // cuando el TableBuilderComponent emite el Markdown generado.
+        break;
     }
 
     this.view.focus();
+  }
+
+  /**
+   * Inserta texto literal en la posicion actual del cursor (nueva linea antes si
+   * la linea actual no esta vacia) y posiciona el cursor al final del bloque insertado.
+   */
+  insertRaw(text: string): void {
+    if (!this.view) return;
+
+    const { head } = this.view.state.selection.main;
+    const line = this.view.state.doc.lineAt(head);
+    const prefix = line.text.trim().length > 0 ? '\n\n' : '\n';
+    const insert = prefix + text;
+
+    this.view.dispatch({
+      changes: { from: line.to, insert },
+      selection: { anchor: line.to + insert.length },
+    });
+
+    this.view.focus();
+  }
+
+  /** Devuelve el foco al editor CodeMirror. */
+  focus(): void {
+    this.view?.focus();
   }
 
   /**

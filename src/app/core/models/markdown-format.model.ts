@@ -16,6 +16,7 @@ export enum MarkdownFormatType {
   H5 = 'h5',
   H6 = 'h6',
   HR = 'hr',
+  Table = 'table',
 }
 
 export enum MarkdownToolGroup {
@@ -24,6 +25,7 @@ export enum MarkdownToolGroup {
   Lists = 'Listas',
   Blocks = 'Bloques',
   Headings = 'Encabezados',
+  Tables = 'Tablas',
 }
 
 export interface MarkdownTool {
@@ -60,4 +62,7 @@ export const MARKDOWN_TOOLS: MarkdownTool[] = [
   { type: MarkdownFormatType.H5, label: 'Título 5', iconName: 'h5', group: MarkdownToolGroup.Headings },
   { type: MarkdownFormatType.H6, label: 'Título 6', iconName: 'h6', group: MarkdownToolGroup.Headings },
   { type: MarkdownFormatType.HR, label: 'Línea horizontal', iconName: 'minus', group: MarkdownToolGroup.Headings },
+
+  // Grupo: Tablas
+  { type: MarkdownFormatType.Table, label: 'Tabla', iconName: 'table', group: MarkdownToolGroup.Tables },
 ];

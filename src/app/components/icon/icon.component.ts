@@ -37,7 +37,11 @@ export type IconName =
   | 'check-circle'
   | 'info'
   | 'alert-triangle'
-  | 'alert-circle';
+  | 'alert-circle'
+  | 'table'
+  | 'align-left'
+  | 'align-center'
+  | 'align-right';
 
 /**
  * Componente presentacional que renderiza iconos SVG inline.

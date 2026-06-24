@@ -10,6 +10,7 @@ import { IconComponent } from '../../components/icon/icon.component';
 import { RelativeTimePipe } from '../../shared/pipes/relative-time.pipe';
 import { MarkdownToolsMenuComponent } from '../../components/markdown-tools/markdown-tools-menu.component';
 import { MarkdownFormatType } from '../../core/models/markdown-format.model';
+import { TableBuilderComponent } from '../../components/table-builder/table-builder.component';
 
 @Component({
   selector: 'app-editor-page',
@@ -21,6 +22,7 @@ import { MarkdownFormatType } from '../../core/models/markdown-format.model';
     IconComponent,
     RelativeTimePipe,
     MarkdownToolsMenuComponent,
+    TableBuilderComponent,
   ],
   templateUrl: './editor-page.component.html',
 })
@@ -30,6 +32,7 @@ export class EditorPageComponent {
   protected readonly sidebarOpen = signal(true);
   protected readonly toolsMenuOpen = signal(false);
   protected readonly activeFormat = signal<MarkdownFormatType | null>(null);
+  protected readonly tableBuilderOpen = signal(false);
 
   private readonly codeEditor = viewChild(CodeEditorComponent);
   private readonly doc = inject(DOCUMENT);
@@ -104,8 +107,23 @@ export class EditorPageComponent {
 
   /** Aplica el formato seleccionado en el editor y cierra el menú. */
   protected onToolSelected(type: MarkdownFormatType): void {
+    if (type === MarkdownFormatType.Table) {
+      this.closeToolsMenu();
+      this.tableBuilderOpen.set(true);
+      return;
+    }
     this.codeEditor()?.applyFormat(type);
     this.closeToolsMenu();
+  }
+
+  protected onTableInsert(markdown: string): void {
+    this.codeEditor()?.insertRaw(markdown);
+    this.tableBuilderOpen.set(false);
+  }
+
+  protected onTableCancel(): void {
+    this.tableBuilderOpen.set(false);
+    this.codeEditor()?.focus();
   }
 
   protected onContentChange(content: string): void {

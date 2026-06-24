@@ -3,6 +3,10 @@ import MarkdownIt from 'markdown-it';
 import DOMPurify from 'dompurify';
 
 const md = new MarkdownIt({ html: false, linkify: true, typographer: true });
+// Las tablas GFM estan habilitadas por defecto en markdown-it v14.
+// Sin embargo MarkdownIt({}) las desactiva salvo que se pase el preset 'default'.
+// Habilitamos el preset completo manualmente:
+md.enable('table');
 
 @Component({
   selector: 'app-markdown-preview',
@@ -14,6 +18,11 @@ export class MarkdownPreviewComponent {
 
   readonly renderedHtml = computed(() => {
     const raw = md.render(this.content());
-    return DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
+    // ADD_ATTR permite preservar el atributo 'style' generado por markdown-it
+    // para la alineacion de columnas (text-align: left|center|right).
+    return DOMPurify.sanitize(raw, {
+      USE_PROFILES: { html: true },
+      ADD_ATTR: ['style'],
+    });
   });
 }
