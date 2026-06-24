@@ -2,9 +2,12 @@ import { Component, computed, inject, output, signal, DestroyRef } from '@angula
 import { DOCUMENT } from '@angular/common';
 import { EditorStateService } from '../../core/services/editor-state.service';
 import { ToastService } from '../../core/services/toast.service';
+import { DatabaseService } from '../../core/services/database.service';
 import { IconComponent } from '../icon/icon.component';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { ExportDialogComponent } from '../export-dialog/export-dialog.component';
 import { TRASH_EXPIRY_DAYS } from '../../shared/text.constants';
+import JSZip from 'jszip';
 
 /** Seccion del sidebar que origino la apertura del menu contextual. */
 type MenuSection = 'active' | 'archived' | 'deleted';
@@ -15,7 +18,7 @@ type MenuSection = 'active' | 'archived' | 'deleted';
  */
 @Component({
   selector: 'app-sidebar',
-  imports: [IconComponent, ConfirmDialogComponent],
+  imports: [IconComponent, ConfirmDialogComponent, ExportDialogComponent],
   host: {
     class: 'block h-full overflow-hidden',
   },
@@ -188,6 +191,7 @@ type MenuSection = 'active' | 'archived' | 'deleted';
 export class SidebarComponent {
   protected readonly editorState = inject(EditorStateService);
   protected readonly toastService = inject(ToastService);
+  protected readonly db = inject(DatabaseService);
   protected readonly searchTerm = signal('');
   readonly closeRequest = output<void>();
 
@@ -203,6 +207,11 @@ export class SidebarComponent {
   // Estado del dialogo de confirmacion
   protected readonly confirmDeleteId = signal<string | null>(null);
   protected readonly confirmDeleteName = signal('');
+
+  // Estado del dialogo de exportacion
+  protected readonly exportDialogFileId = signal<string | null>(null);
+  protected readonly exportDialogFileName = signal('');
+  protected readonly exportDialogImageCount = signal(0);
 
   // Estado de secciones colapsables
   protected readonly archivedExpanded = signal(false);
@@ -364,15 +373,146 @@ export class SidebarComponent {
     const file = this.editorState.files().find((f) => f.id === fileId);
     if (!file) return;
 
-    const blob = new Blob([file.content], { type: 'text/markdown;charset=utf-8' });
+    const imageCount = this.countLocalImages(file.content);
+    if (imageCount > 0) {
+      this.exportDialogFileId.set(fileId);
+      this.exportDialogFileName.set(file.title);
+      this.exportDialogImageCount.set(imageCount);
+    } else {
+      this.downloadMd(fileId, file.content);
+    }
+  }
+
+  protected async onExportBase64(): Promise<void> {
+    const fileId = this.exportDialogFileId();
+    const file = this.editorState.files().find((f) => f.id === fileId);
+    if (!file) return;
+
+    this.closeExportDialog();
+    const content = await this.resolveImagesBase64(file.content);
+    this.downloadMdBlob(content, file.title);
+    this.toastService.show(`Descargando "${file.title}"`, 'success');
+  }
+
+  protected async onExportZip(): Promise<void> {
+    const fileId = this.exportDialogFileId();
+    const file = this.editorState.files().find((f) => f.id === fileId);
+    if (!file) return;
+
+    this.closeExportDialog();
+    const zip = new JSZip();
+
+    const imagesDir = zip.folder('images');
+    const content = await this.resolveImagesZip(file.content, imagesDir!);
+
+    zip.file(`${file.title.replace(/[^a-z0-9_\-\s]/gi, '').trim() || 'untitled'}.md`, content);
+
+    const blob = await zip.generateAsync({ type: 'blob' });
     const url = URL.createObjectURL(blob);
     const anchor = this.doc.createElement('a');
     anchor.href = url;
-    anchor.download = `${file.title.replace(/[^a-z0-9_\-\s]/gi, '').trim() || 'untitled'}.md`;
+    anchor.download = `${file.title.replace(/[^a-z0-9_\-\s]/gi, '').trim() || 'untitled'}.zip`;
     anchor.click();
     URL.revokeObjectURL(url);
     this.closeMenu();
+    this.toastService.show(`Descargando "${file.title}.zip"`, 'success');
+  }
+
+  protected closeExportDialog(): void {
+    this.exportDialogFileId.set(null);
+  }
+
+  private countLocalImages(content: string): number {
+    const re = /mm-image:\/\//g;
+    let count = 0;
+    while (re.exec(content) !== null) count++;
+    return count;
+  }
+
+  private downloadMd(fileId: string, content: string): void {
+    const file = this.editorState.files().find((f) => f.id === fileId);
+    if (!file) return;
+    this.downloadMdBlob(content, file.title);
+    this.closeMenu();
     this.toastService.show(`Descargando "${file.title}"`, 'success');
+  }
+
+  private downloadMdBlob(content: string, title: string): void {
+    const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = this.doc.createElement('a');
+    anchor.href = url;
+    anchor.download = `${title.replace(/[^a-z0-9_\-\s]/gi, '').trim() || 'untitled'}.md`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
+  private async resolveImagesBase64(content: string): Promise<string> {
+    const uuidRe = /mm-image:\/\/([a-f0-9-]+)/g;
+    const uuids = new Set<string>();
+    let match;
+    while ((match = uuidRe.exec(content)) !== null) {
+      uuids.add(match[1]);
+    }
+    if (uuids.size === 0) return content;
+
+    let resolved = content;
+    for (const uuid of uuids) {
+      const img = await this.db.getImageById(uuid);
+      if (!img) continue;
+
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(img.data);
+      });
+
+      resolved = resolved.replace(
+        new RegExp(`\\(mm-image://${uuid}(\\s+"[^"]*")?\\)`, 'g'),
+        `(${dataUrl}$1)`,
+      );
+    }
+    return resolved;
+  }
+
+  private async resolveImagesZip(
+    content: string,
+    imagesDir: JSZip,
+  ): Promise<string> {
+    const uuidRe = /mm-image:\/\/([a-f0-9-]+)/g;
+    const uuids = new Set<string>();
+    let match;
+    while ((match = uuidRe.exec(content)) !== null) {
+      uuids.add(match[1]);
+    }
+    if (uuids.size === 0) return content;
+
+    const extMap: Record<string, string> = {
+      'image/jpeg': '.jpg',
+      'image/png': '.png',
+      'image/gif': '.gif',
+      'image/webp': '.webp',
+      'image/svg+xml': '.svg',
+      'image/bmp': '.bmp',
+      'image/avif': '.avif',
+    };
+
+    let resolved = content;
+    for (const uuid of uuids) {
+      const img = await this.db.getImageById(uuid);
+      if (!img) continue;
+
+      const ext = extMap[img.mimeType] || '.bin';
+      const filename = `${uuid}${ext}`;
+      imagesDir.file(filename, img.data);
+
+      resolved = resolved.replace(
+        new RegExp(`\\(mm-image://${uuid}(\\s+"[^"]*")?\\)`, 'g'),
+        `(images/${filename}$1)`,
+      );
+    }
+    return resolved;
   }
 
   protected trashFile(fileId: string): void {

@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { AppDatabase } from '../db/app-database';
 import { FileStatus, MarkdownFile } from '../models/markdown-file.model';
+import { MarkdownImage } from '../models/markdown-image.model';
 import { FileRepository } from '../repositories/file-repository';
 
 /**
@@ -130,6 +131,7 @@ export class DatabaseService extends FileRepository {
    * @param id Identificador del archivo.
    */
   async deleteForever(id: string): Promise<void> {
+    await this.deleteImagesByFileIds([id]);
     await this.db.files.delete(id);
   }
 
@@ -148,7 +150,52 @@ export class DatabaseService extends FileRepository {
 
     if (expired.length === 0) return 0;
 
-    await this.db.files.bulkDelete(expired.map((f) => f.id));
+    const expiredIds = expired.map((f) => f.id);
+    await this.deleteImagesByFileIds(expiredIds);
+    await this.db.files.bulkDelete(expiredIds);
     return expired.length;
+  }
+
+  // ── Image operations ──────────────────────────────────────────────────────
+
+  /**
+   * Guarda una imagen en la base de datos.
+   * @param image Datos de la imagen sin id.
+   * @returns El identificador UUID de la imagen guardada.
+   */
+  async saveImage(image: Omit<MarkdownImage, 'id'>): Promise<string> {
+    const id = crypto.randomUUID();
+    await this.db.images.add({ ...image, id });
+    return id;
+  }
+
+  /**
+   * Retorna una imagen por su identificador.
+   * @param id UUID de la imagen.
+   */
+  async getImageById(id: string): Promise<MarkdownImage | undefined> {
+    return this.db.images.get(id);
+  }
+
+  /**
+   * Retorna todas las imágenes asociadas a un archivo.
+   * @param fileId UUID del archivo.
+   */
+  async getImagesByFileId(fileId: string): Promise<MarkdownImage[]> {
+    return this.db.images.where('fileId').equals(fileId).toArray();
+  }
+
+  /**
+   * Elimina todas las imágenes asociadas a los ids de archivo proporcionados.
+   * @param fileIds Lista de UUIDs de archivos.
+   */
+  async deleteImagesByFileIds(fileIds: string[]): Promise<void> {
+    if (fileIds.length === 0) return;
+    const images = await this.db.images
+      .where('fileId')
+      .anyOf(fileIds)
+      .toArray();
+    if (images.length === 0) return;
+    await this.db.images.bulkDelete(images.map((i) => i.id));
   }
 }

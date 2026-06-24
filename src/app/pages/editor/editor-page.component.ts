@@ -11,6 +11,9 @@ import { RelativeTimePipe } from '../../shared/pipes/relative-time.pipe';
 import { MarkdownToolsMenuComponent } from '../../components/markdown-tools/markdown-tools-menu.component';
 import { MarkdownFormatType } from '../../core/models/markdown-format.model';
 import { TableBuilderComponent } from '../../components/table-builder/table-builder.component';
+import { ImagePickerComponent, ImagePickResult } from '../../components/image-picker/image-picker.component';
+import { ImageUrlPickerComponent, ImageUrlResult } from '../../components/image-url-picker/image-url-picker.component';
+import { DatabaseService } from '../../core/services/database.service';
 
 @Component({
   selector: 'app-editor-page',
@@ -23,16 +26,21 @@ import { TableBuilderComponent } from '../../components/table-builder/table-buil
     RelativeTimePipe,
     MarkdownToolsMenuComponent,
     TableBuilderComponent,
+    ImagePickerComponent,
+    ImageUrlPickerComponent,
   ],
   templateUrl: './editor-page.component.html',
 })
 export class EditorPageComponent {
   protected readonly editorState = inject(EditorStateService);
+  protected readonly db = inject(DatabaseService);
   protected readonly ViewMode = ViewMode;
   protected readonly sidebarOpen = signal(true);
   protected readonly toolsMenuOpen = signal(false);
   protected readonly activeFormat = signal<MarkdownFormatType | null>(null);
   protected readonly tableBuilderOpen = signal(false);
+  protected readonly imagePickerOpen = signal(false);
+  protected readonly imageUrlPickerOpen = signal(false);
 
   private readonly codeEditor = viewChild(CodeEditorComponent);
   private readonly doc = inject(DOCUMENT);
@@ -112,6 +120,16 @@ export class EditorPageComponent {
       this.tableBuilderOpen.set(true);
       return;
     }
+    if (type === MarkdownFormatType.Image) {
+      this.closeToolsMenu();
+      this.imagePickerOpen.set(true);
+      return;
+    }
+    if (type === MarkdownFormatType.ImageUrl) {
+      this.closeToolsMenu();
+      this.imageUrlPickerOpen.set(true);
+      return;
+    }
     this.codeEditor()?.applyFormat(type);
     this.closeToolsMenu();
   }
@@ -123,6 +141,41 @@ export class EditorPageComponent {
 
   protected onTableCancel(): void {
     this.tableBuilderOpen.set(false);
+    this.codeEditor()?.focus();
+  }
+
+  protected async onImageInsert(result: ImagePickResult): Promise<void> {
+    const fileId = this.editorState.activeFileId();
+    if (!fileId) return;
+
+    const imageId = await this.db.saveImage({
+      data: result.blob,
+      mimeType: result.mimeType,
+      name: result.name,
+      fileId,
+      createdAt: Date.now(),
+    });
+
+    const title = result.alignment ? `"${result.alignment}"` : '';
+    const markdown = `![${result.alt}](mm-image://${imageId}${title ? ' ' + title : ''})`;
+    this.codeEditor()?.insertRaw(markdown);
+    this.imagePickerOpen.set(false);
+  }
+
+  protected onImageCancel(): void {
+    this.imagePickerOpen.set(false);
+    this.codeEditor()?.focus();
+  }
+
+  protected onImageUrlInsert(result: ImageUrlResult): void {
+    const title = result.alignment ? `"${result.alignment}"` : '';
+    const markdown = `![${result.alt}](${result.url}${title ? ' ' + title : ''})`;
+    this.codeEditor()?.insertRaw(markdown);
+    this.imageUrlPickerOpen.set(false);
+  }
+
+  protected onImageUrlCancel(): void {
+    this.imageUrlPickerOpen.set(false);
     this.codeEditor()?.focus();
   }
 

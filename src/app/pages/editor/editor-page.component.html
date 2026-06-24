@@ -132,3 +132,15 @@
     (tableInsert)="onTableInsert($event)"
     (cancelRequest)="onTableCancel()" />
 }
+
+@if (imagePickerOpen()) {
+  <app-image-picker
+    (imageInsert)="onImageInsert($event)"
+    (cancelRequest)="onImageCancel()" />
+}
+
+@if (imageUrlPickerOpen()) {
+  <app-image-url-picker
+    (imageUrlInsert)="onImageUrlInsert($event)"
+    (cancelRequest)="onImageUrlCancel()" />
+}

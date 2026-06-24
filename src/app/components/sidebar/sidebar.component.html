@@ -363,4 +363,14 @@
       (confirm)="confirmDeleteForever()"
       (cancel)="cancelDeleteForever()" />
   }
+
+  <!-- ====== Dialogo de exportacion ====== -->
+  @if (exportDialogFileId()) {
+    <app-export-dialog
+      [fileName]="exportDialogFileName()"
+      [imageCount]="exportDialogImageCount()"
+      (base64Export)="onExportBase64()"
+      (zipExport)="onExportZip()"
+      (cancel)="closeExportDialog()" />
+  }
 </nav>

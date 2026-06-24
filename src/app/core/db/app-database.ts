@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import Dexie, { Table } from 'dexie';
 import { MarkdownFile } from '../models/markdown-file.model';
+import { MarkdownImage } from '../models/markdown-image.model';
 import { DB_NAME } from '../../shared/text.constants';
 
 /**
@@ -12,15 +13,19 @@ import { DB_NAME } from '../../shared/text.constants';
 @Injectable({ providedIn: 'root' })
 export class AppDatabase extends Dexie {
   files!: Table<MarkdownFile, string>;
+  images!: Table<MarkdownImage, string>;
 
   constructor() {
     super(DB_NAME);
     this.version(1).stores({
       files: '&id, status',
     });
-    // Version 2: agrega campo deletedAt (campo JS, no requiere indice nuevo).
     this.version(2).stores({
       files: '&id, status',
+    });
+    this.version(3).stores({
+      files: '&id, status',
+      images: '&id, fileId',
     });
   }
 }

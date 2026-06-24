@@ -41,7 +41,8 @@ export type IconName =
   | 'table'
   | 'align-left'
   | 'align-center'
-  | 'align-right';
+  | 'align-right'
+  | 'image';
 
 /**
  * Componente presentacional que renderiza iconos SVG inline.

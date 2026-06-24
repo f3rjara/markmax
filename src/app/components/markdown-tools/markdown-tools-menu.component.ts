@@ -10,11 +10,12 @@ import { IconName } from '../icon/icon.component';
 /** Orden de renderizado de los grupos */
 const GROUP_ORDER: MarkdownToolGroup[] = [
   MarkdownToolGroup.Text,
+  MarkdownToolGroup.Media,
+  MarkdownToolGroup.Tables,
   MarkdownToolGroup.Links,
   MarkdownToolGroup.Lists,
   MarkdownToolGroup.Blocks,
   MarkdownToolGroup.Headings,
-  MarkdownToolGroup.Tables,
 ];
 
 @Component({
@@ -22,10 +23,7 @@ const GROUP_ORDER: MarkdownToolGroup[] = [
   imports: [IconComponent],
   template: `
     <!-- Panel del menú -->
-    <div
-      class="tools-menu"
-      role="menu"
-      aria-label="Herramientas de formato Markdown">
+    <div class="tools-menu" role="menu" aria-label="Herramientas de formato Markdown">
       @for (group of groups; track group.name; let last = $last) {
         <!-- Etiqueta del grupo -->
         <p class="tools-group-label">{{ group.name }}</p>
@@ -39,7 +37,8 @@ const GROUP_ORDER: MarkdownToolGroup[] = [
             [class.tools-item--active]="activeFormat() === tool.type"
             [attr.aria-label]="tool.label"
             [attr.aria-pressed]="activeFormat() === tool.type"
-            (click)="onToolClick(tool.type)">
+            (click)="onToolClick(tool.type)"
+          >
             <app-icon [name]="$any(tool.iconName)" [size]="15" class="tools-item-icon" />
             <span class="tools-item-label">{{ tool.label }}</span>
           </button>
@@ -129,7 +128,9 @@ const GROUP_ORDER: MarkdownToolGroup[] = [
       font-weight: 400;
       cursor: pointer;
       text-align: left;
-      transition: background 0.12s ease, color 0.12s ease;
+      transition:
+        background 0.12s ease,
+        color 0.12s ease;
     }
 
     .tools-item:hover {

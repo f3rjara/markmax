@@ -1,10 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
+import { FileRepository } from './core/repositories/file-repository';
+import { DatabaseService } from './core/services/database.service';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [{ provide: FileRepository, useExisting: DatabaseService }],
     }).compileComponents();
   });
 
