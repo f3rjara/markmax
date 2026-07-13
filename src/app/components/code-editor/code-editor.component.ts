@@ -9,12 +9,32 @@ import {
   output,
   viewChild,
 } from '@angular/core';
-import { basicSetup } from 'codemirror';
+import {
+  lineNumbers,
+  highlightActiveLineGutter,
+  highlightSpecialChars,
+  drawSelection,
+  dropCursor,
+  rectangularSelection,
+  crosshairCursor,
+  highlightActiveLine,
+  keymap,
+  EditorView,
+} from '@codemirror/view';
+import { EditorState, SelectionRange } from '@codemirror/state';
+import {
+  foldGutter,
+  syntaxHighlighting,
+  defaultHighlightStyle,
+  bracketMatching,
+  foldKeymap,
+} from '@codemirror/language';
+import { history, historyKeymap } from '@codemirror/commands';
+import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
+import { lintKeymap } from '@codemirror/lint';
 import { markdown } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { EditorState, SelectionRange } from '@codemirror/state';
-import { EditorView } from '@codemirror/view';
 import { MarkdownFormatType } from '../../core/models/markdown-format.model';
 
 @Component({
@@ -259,10 +279,33 @@ export class CodeEditorComponent implements OnDestroy {
   }
 
   private initEditor(): void {
+    const customSetup = [
+      lineNumbers(),
+      highlightActiveLineGutter(),
+      highlightSpecialChars(),
+      history(),
+      foldGutter(),
+      drawSelection(),
+      dropCursor(),
+      EditorState.allowMultipleSelections.of(true),
+      syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+      bracketMatching(),
+      rectangularSelection(),
+      crosshairCursor(),
+      highlightActiveLine(),
+      highlightSelectionMatches(),
+      keymap.of([
+        ...historyKeymap,
+        ...foldKeymap,
+        ...searchKeymap,
+        ...lintKeymap,
+      ]),
+    ];
+
     const state = EditorState.create({
       doc: this.content(),
       extensions: [
-        basicSetup,
+        customSetup,
         markdown({ codeLanguages: languages }),
         oneDark,
         EditorView.updateListener.of((update) => {

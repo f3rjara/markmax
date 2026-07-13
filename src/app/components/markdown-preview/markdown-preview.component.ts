@@ -7,10 +7,23 @@ import {
   signal,
 } from '@angular/core';
 import MarkdownIt from 'markdown-it';
+import hljs from 'highlight.js';
 import DOMPurify from 'dompurify';
 import { DatabaseService } from '../../core/services/database.service';
 
-const md = new MarkdownIt({ html: false, linkify: true, typographer: true });
+const md = new MarkdownIt({
+  html: false,
+  linkify: true,
+  typographer: true,
+  highlight: function (str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(str, { language: lang }).value;
+      } catch (__) {}
+    }
+    return ''; // use external default escaping
+  },
+});
 md.enable('table');
 
 const ALIGNMENT_VALUES = new Set(['left', 'center', 'right']);
