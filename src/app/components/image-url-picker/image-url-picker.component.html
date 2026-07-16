@@ -1,0 +1,108 @@
+<div class="iup-backdrop" (click)="cancelRequest.emit()" aria-hidden="true"></div>
+
+<div class="iup-panel">
+  <h2 class="iup-title" id="image-url-picker-title">
+    <span class="iup-title-icon" aria-hidden="true">
+      <app-icon name="link" [size]="16" />
+    </span>
+    Insertar imagen desde URL
+  </h2>
+
+  <div class="iup-fields">
+    <!-- URL -->
+    <div class="iup-field">
+      <label class="iup-field-label" for="iup-url">URL de la imagen</label>
+      <input
+        id="iup-url"
+        class="iup-field-input"
+        type="url"
+        placeholder="https://ejemplo.com/imagen.jpg"
+        [value]="imageUrl()"
+        (input)="onUrlChange($any($event).target.value)"
+        (keydown.enter)="handleInsert()" />
+    </div>
+
+    <!-- Preview -->
+    @if (previewUrl()) {
+      <div class="iup-preview">
+        <img [src]="previewUrl()" alt="Vista previa" />
+      </div>
+    } @else {
+      <div class="iup-preview iup-preview--empty">
+        @if (imageUrl()) {
+          <span>Vista previa no disponible</span>
+        }
+      </div>
+    }
+
+    <!-- Texto alternativo -->
+    <div class="iup-field">
+      <label class="iup-field-label" for="iup-alt">Texto alternativo</label>
+      <input
+        id="iup-alt"
+        class="iup-field-input"
+        type="text"
+        placeholder="Descripción de la imagen"
+        [value]="altText()"
+        (input)="altText.set($any($event).target.value)" />
+    </div>
+
+    <!-- Alineación -->
+    <div class="iup-field">
+      <span class="iup-field-label">Alineación</span>
+      <div class="iup-align-group" role="group" aria-label="Alineación de la imagen">
+        <button
+          type="button"
+          class="iup-align-btn"
+          [class.iup-align-btn--active]="alignment() === null"
+          aria-label="Sin alineación"
+          [attr.aria-pressed]="alignment() === null"
+          (click)="alignment.set(null)">
+          <app-icon name="minus" [size]="14" />
+        </button>
+        <button
+          type="button"
+          class="iup-align-btn"
+          [class.iup-align-btn--active]="alignment() === 'left'"
+          aria-label="Alinear a la izquierda"
+          [attr.aria-pressed]="alignment() === 'left'"
+          (click)="alignment.set('left')">
+          <app-icon name="align-left" [size]="14" />
+        </button>
+        <button
+          type="button"
+          class="iup-align-btn"
+          [class.iup-align-btn--active]="alignment() === 'center'"
+          aria-label="Centrar"
+          [attr.aria-pressed]="alignment() === 'center'"
+          (click)="alignment.set('center')">
+          <app-icon name="align-center" [size]="14" />
+        </button>
+        <button
+          type="button"
+          class="iup-align-btn"
+          [class.iup-align-btn--active]="alignment() === 'right'"
+          aria-label="Alinear a la derecha"
+          [attr.aria-pressed]="alignment() === 'right'"
+          (click)="alignment.set('right')">
+          <app-icon name="align-right" [size]="14" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acciones -->
+  <div class="iup-actions">
+    <button type="button" class="iup-btn iup-btn--cancel" (click)="cancelRequest.emit()">
+      Cancelar
+    </button>
+    <button
+      #insertBtn
+      type="button"
+      class="iup-btn iup-btn--insert"
+      [disabled]="!imageUrl()"
+      (click)="handleInsert()">
+      Insertar imagen
+    </button>
+  </div>
+</div>

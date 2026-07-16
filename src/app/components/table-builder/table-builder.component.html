@@ -1,0 +1,189 @@
+<div class="tb-backdrop" (click)="cancelRequest.emit()" aria-hidden="true"></div>
+
+<div class="tb-panel">
+  <!-- Titulo -->
+  <h2 class="tb-title" id="table-builder-title">
+    <span class="tb-title-icon" aria-hidden="true">
+      <app-icon name="table" [size]="16" />
+    </span>
+    Insertar tabla
+  </h2>
+
+  <!-- Barra de controles -->
+  <div class="tb-toolbar">
+    <!-- Columnas -->
+    <div class="tb-control-group">
+      <span class="tb-control-label">Columnas</span>
+      <div class="tb-stepper" role="group" aria-label="Numero de columnas">
+        <button
+          type="button"
+          class="tb-stepper-btn"
+          aria-label="Quitar columna"
+          [disabled]="cols() <= 1"
+          (click)="removeCols()">
+          <app-icon name="minus" [size]="13" />
+        </button>
+        <span class="tb-stepper-value" aria-live="polite" aria-atomic="true">{{ cols() }}</span>
+        <button
+          type="button"
+          class="tb-stepper-btn"
+          aria-label="Agregar columna"
+          [disabled]="cols() >= MAX_COLS"
+          (click)="addCols()">
+          <app-icon name="plus" [size]="13" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Filas -->
+    <div class="tb-control-group">
+      <span class="tb-control-label">Filas</span>
+      <div class="tb-stepper" role="group" aria-label="Numero de filas">
+        <button
+          type="button"
+          class="tb-stepper-btn"
+          aria-label="Quitar fila"
+          [disabled]="rows() <= 1"
+          (click)="removeRows()">
+          <app-icon name="minus" [size]="13" />
+        </button>
+        <span class="tb-stepper-value" aria-live="polite" aria-atomic="true">{{ rows() }}</span>
+        <button
+          type="button"
+          class="tb-stepper-btn"
+          aria-label="Agregar fila"
+          [disabled]="rows() >= MAX_ROWS"
+          (click)="addRows()">
+          <app-icon name="plus" [size]="13" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Alineacion global (todas las columnas) -->
+    <div class="tb-global-align">
+      <span class="tb-control-label">Alinear todas</span>
+      <div class="tb-align-group" role="group" aria-label="Alinear todas las columnas">
+        <button
+          type="button"
+          class="tb-align-btn"
+          [class.tb-align-btn--active]="globalAlignment() === 'left'"
+          aria-label="Alinear todo a la izquierda"
+          [attr.aria-pressed]="globalAlignment() === 'left'"
+          (click)="setGlobalAlignment('left')">
+          <app-icon name="align-left" [size]="13" />
+        </button>
+        <button
+          type="button"
+          class="tb-align-btn"
+          [class.tb-align-btn--active]="globalAlignment() === 'center'"
+          aria-label="Centrar todo"
+          [attr.aria-pressed]="globalAlignment() === 'center'"
+          (click)="setGlobalAlignment('center')">
+          <app-icon name="align-center" [size]="13" />
+        </button>
+        <button
+          type="button"
+          class="tb-align-btn"
+          [class.tb-align-btn--active]="globalAlignment() === 'right'"
+          aria-label="Alinear todo a la derecha"
+          [attr.aria-pressed]="globalAlignment() === 'right'"
+          (click)="setGlobalAlignment('right')">
+          <app-icon name="align-right" [size]="13" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla editable -->
+  <div class="tb-scroll" role="region" aria-label="Tabla editable">
+    <table class="tb-table">
+      <thead>
+        <!-- Fila de cabeceras editables -->
+        <tr>
+          @for (col of colsArray(); track $index; let ci = $index) {
+            <th [style.text-align]="alignments()[ci] ?? 'left'">
+              <input
+                class="tb-cell-input"
+                type="text"
+                [style.text-align]="alignments()[ci] ?? 'left'"
+                [value]="headers()[ci] ?? ''"
+                [attr.placeholder]="'Col ' + (ci + 1)"
+                [attr.aria-label]="'Cabecera de columna ' + (ci + 1)"
+                (input)="setHeader(ci, $any($event.target).value)" />
+            </th>
+          }
+        </tr>
+        <!-- Fila de controles de alineacion por columna -->
+        <tr aria-hidden="true">
+          @for (col of colsArray(); track $index; let ci = $index) {
+            <th>
+              <div class="tb-col-align-btns">
+                <button
+                  type="button"
+                  class="tb-col-align-btn"
+                  [class.tb-col-align-btn--active]="alignments()[ci] === 'left'"
+                  [attr.aria-label]="'Col ' + (ci + 1) + ' izquierda'"
+                  (click)="setAlignment(ci, 'left')">
+                  <app-icon name="align-left" [size]="10" />
+                </button>
+                <button
+                  type="button"
+                  class="tb-col-align-btn"
+                  [class.tb-col-align-btn--active]="alignments()[ci] === 'center'"
+                  [attr.aria-label]="'Col ' + (ci + 1) + ' centrar'"
+                  (click)="setAlignment(ci, 'center')">
+                  <app-icon name="align-center" [size]="10" />
+                </button>
+                <button
+                  type="button"
+                  class="tb-col-align-btn"
+                  [class.tb-col-align-btn--active]="alignments()[ci] === 'right'"
+                  [attr.aria-label]="'Col ' + (ci + 1) + ' derecha'"
+                  (click)="setAlignment(ci, 'right')">
+                  <app-icon name="align-right" [size]="10" />
+                </button>
+              </div>
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rowsArray(); track $index; let ri = $index) {
+          <tr>
+            @for (col of colsArray(); track $index; let ci = $index) {
+              <td [style.text-align]="alignments()[ci] ?? 'left'">
+                <input
+                  class="tb-data-input"
+                  type="text"
+                  [style.text-align]="alignments()[ci] ?? 'left'"
+                  [value]="cells()[ri]?.[ci] ?? ''"
+                  placeholder=""
+                  [attr.aria-label]="'Fila ' + (ri + 1) + ' columna ' + (ci + 1)"
+                  (input)="setCell(ri, ci, $any($event.target).value)" />
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Acciones -->
+  <div class="tb-actions">
+    <button
+      type="button"
+      class="tb-btn tb-btn--cancel"
+      id="table-builder-cancel"
+      (click)="cancelRequest.emit()">
+      Cancelar
+    </button>
+    <button
+      #insertBtn
+      type="button"
+      class="tb-btn tb-btn--insert"
+      id="table-builder-insert"
+      (click)="handleInsert()">
+      Insertar tabla
+    </button>
+  </div>
+</div>

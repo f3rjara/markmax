@@ -49,7 +49,7 @@
             <button
               type="button"
               id="tools-menu-trigger"
-              class="flex items-center justify-center w-8 h-8 rounded-full border border-mm-border text-mm-text-secondary hover:text-mm-accent hover:border-mm-accent transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+              class="flex items-center justify-center w-8 h-8 rounded-full border border-mm-border text-mm-text-secondary hover:text-mm-accent hover:border-mm-accent transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
               [class.border-mm-accent]="toolsMenuOpen()"
               [class.text-mm-accent]="toolsMenuOpen()"
               [attr.aria-expanded]="toolsMenuOpen()"
@@ -75,7 +75,7 @@
             aria-label="Modo de visualización">
             <button
               type="button"
-              class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+              class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
               [class]="
                 editorState.viewMode() === ViewMode.Code
                   ? 'mm-btn-primary text-white'
@@ -88,7 +88,7 @@
             </button>
             <button
               type="button"
-              class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+              class="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
               [class]="
                 editorState.viewMode() === ViewMode.Preview
                   ? 'mm-btn-primary text-white'
@@ -128,15 +128,11 @@
 </div>
 
 @if (tableBuilderOpen()) {
-  <app-table-builder
-    (tableInsert)="onTableInsert($event)"
-    (cancelRequest)="onTableCancel()" />
+  <app-table-builder (tableInsert)="onTableInsert($event)" (cancelRequest)="onTableCancel()" />
 }
 
 @if (imagePickerOpen()) {
-  <app-image-picker
-    (imageInsert)="onImageInsert($event)"
-    (cancelRequest)="onImageCancel()" />
+  <app-image-picker (imageInsert)="onImageInsert($event)" (cancelRequest)="onImageCancel()" />
 }
 
 @if (imageUrlPickerOpen()) {

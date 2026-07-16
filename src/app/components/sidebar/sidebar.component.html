@@ -19,7 +19,7 @@
     <div class="flex items-center gap-1">
       <button
         type="button"
-        class="flex items-center justify-center w-7 h-7 rounded-md text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+        class="flex items-center justify-center w-7 h-7 rounded-md text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
         aria-label="Crear nuevo archivo"
         (click)="createFile()">
         <app-icon name="plus" [size]="16" />
@@ -27,7 +27,7 @@
       <button
         type="button"
         title="Cerrar panel lateral"
-        class="flex items-center justify-center w-7 h-7 rounded-md text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
+        class="flex items-center justify-center w-7 h-7 rounded-md text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
         aria-label="Cerrar panel lateral"
         (click)="closeRequest.emit()">
         <app-icon name="panel-left" [size]="16" />
@@ -68,7 +68,9 @@
       </div>
       <ul role="list" aria-label="Archivos recientes">
         @for (file of filteredFiles(); track file.id) {
-          <li class="relative group" (contextmenu)="openMenuFromRightClick($event, file.id, 'active')">
+          <li
+            class="relative group"
+            (contextmenu)="openMenuFromRightClick($event, file.id, 'active')">
             <button
               type="button"
               class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-left transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-mm-accent pr-10"
@@ -253,9 +255,7 @@
       [style.left.px]="menuPosition().left"
       role="menu"
       aria-label="Acciones de archivo">
-
       @switch (menuSection()) {
-
         <!-- Menu para archivos ACTIVOS -->
         @case ('active') {
           <button

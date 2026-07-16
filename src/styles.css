@@ -84,7 +84,10 @@
   color: #9d93a8;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.2s, background 0.15s, color 0.15s;
+  transition:
+    opacity 0.2s,
+    background 0.15s,
+    color 0.15s;
 }
 
 .mm-code-block-wrapper:hover .mm-copy-code-btn {
@@ -176,29 +179,56 @@
 }
 
 /* Preservar alineaciones generadas por markdown-it (style="text-align:...") */
-.prose-mm table [style*="text-align:center"],
-.prose-mm table [style*="text-align: center"] { text-align: center !important; }
+.prose-mm table [style*='text-align:center'],
+.prose-mm table [style*='text-align: center'] {
+  text-align: center !important;
+}
 
-.prose-mm table [style*="text-align:right"],
-.prose-mm table [style*="text-align: right"]   { text-align: right !important; }
+.prose-mm table [style*='text-align:right'],
+.prose-mm table [style*='text-align: right'] {
+  text-align: right !important;
+}
 
-.prose-mm table [style*="text-align:left"],
-.prose-mm table [style*="text-align: left"]    { text-align: left !important; }
-
+.prose-mm table [style*='text-align:left'],
+.prose-mm table [style*='text-align: left'] {
+  text-align: left !important;
+}
 
 .prose-mm :is(h1, h2, h3, h4, h5, h6) {
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
-.prose-mm h1 { font-size: 1.875rem; margin-top: 0; border-bottom: 1px solid rgba(139, 92, 246, 0.2); padding-bottom: 0.4em; }
-.prose-mm h2 { font-size: 1.375rem; border-bottom: 1px solid rgba(139, 92, 246, 0.12); padding-bottom: 0.3em; }
-.prose-mm h3 { font-size: 1.15rem; }
-.prose-mm h4 { font-size: 1rem; }
-.prose-mm h5 { font-size: 0.9rem; }
-.prose-mm h6 { font-size: 0.85rem; color: #9d93a8; }
+.prose-mm h1 {
+  font-size: 1.875rem;
+  margin-top: 0;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  padding-bottom: 0.4em;
+}
+.prose-mm h2 {
+  font-size: 1.375rem;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.12);
+  padding-bottom: 0.3em;
+}
+.prose-mm h3 {
+  font-size: 1.15rem;
+}
+.prose-mm h4 {
+  font-size: 1rem;
+}
+.prose-mm h5 {
+  font-size: 0.9rem;
+}
+.prose-mm h6 {
+  font-size: 0.85rem;
+  color: #9d93a8;
+}
 
-.prose-mm p { line-height: 1.8; margin-top: 1em; margin-bottom: 1em; }
+.prose-mm p {
+  line-height: 1.8;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
 
 /* ── Alineación de imágenes ── */
 .mm-image-align-left {
@@ -269,33 +299,28 @@
 /* ── Botón principal con gradiente morado ── */
 .mm-btn-primary {
   background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35), 0 1px 4px rgba(0, 0, 0, 0.4);
-  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+  box-shadow:
+    0 4px 20px rgba(139, 92, 246, 0.35),
+    0 1px 4px rgba(0, 0, 0, 0.4);
+  transition:
+    background 0.2s,
+    box-shadow 0.2s,
+    transform 0.1s;
 }
 
 .mm-btn-primary:hover {
   background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.45), 0 1px 4px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 6px 24px rgba(139, 92, 246, 0.45),
+    0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 /* ── Degradado ambiental del sidebar (flujo morado sutil) ── */
 .mm-sidebar-bg {
   background:
-    radial-gradient(
-      ellipse 140% 50% at -20% 20%,
-      rgba(109, 40, 217, 0.09) 0%,
-      transparent 60%
-    ),
-    radial-gradient(
-      ellipse 100% 45% at 120% 75%,
-      rgba(124, 58, 237, 0.07) 0%,
-      transparent 55%
-    ),
-    radial-gradient(
-      ellipse 70% 35% at 50% 100%,
-      rgba(91, 33, 182, 0.06) 0%,
-      transparent 65%
-    ),
+    radial-gradient(ellipse 140% 50% at -20% 20%, rgba(109, 40, 217, 0.09) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 45% at 120% 75%, rgba(124, 58, 237, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 35% at 50% 100%, rgba(91, 33, 182, 0.06) 0%, transparent 65%),
     var(--color-mm-sidebar);
 }
 
@@ -318,4 +343,8 @@
   );
   filter: blur(32px);
   z-index: 0;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }

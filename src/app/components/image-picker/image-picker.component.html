@@ -1,0 +1,109 @@
+<div class="ip-backdrop" (click)="cancelRequest.emit()" aria-hidden="true"></div>
+
+<div class="ip-panel">
+  <h2 class="ip-title" id="image-picker-title">
+    <span class="ip-title-icon" aria-hidden="true">
+      <app-icon name="image" [size]="16" />
+    </span>
+    Insertar imagen
+  </h2>
+
+  @if (!selectedFile()) {
+    <!-- Zona de selección -->
+    <div
+      class="ip-zone"
+      role="button"
+      tabindex="0"
+      aria-label="Seleccionar imagen"
+      (click)="fileInput()?.nativeElement?.click()"
+      (keydown.enter)="fileInput()?.nativeElement?.click()">
+      <app-icon name="image" [size]="32" class="ip-zone-icon" />
+      <p class="ip-zone-text">Haz clic para <strong>seleccionar una imagen</strong></p>
+    </div>
+  } @else {
+    <!-- Preview -->
+    <div class="ip-preview-wrap">
+      <div class="ip-preview">
+        <img [src]="previewUrl()" [alt]="altText() || 'Vista previa'" />
+      </div>
+      <p class="ip-filename">{{ selectedFile()?.name }}</p>
+    </div>
+
+    <!-- Campos -->
+    <div class="ip-fields">
+      <div class="ip-field">
+        <label class="ip-field-label" for="ip-alt">Texto alternativo</label>
+        <input
+          id="ip-alt"
+          class="ip-field-input"
+          type="text"
+          placeholder="Descripción de la imagen"
+          [value]="altText()"
+          (input)="altText.set($any($event.target).value)" />
+      </div>
+
+      <div class="ip-field">
+        <span class="ip-field-label">Alineación</span>
+        <div class="ip-align-group" role="group" aria-label="Alineación de la imagen">
+          <button
+            type="button"
+            class="ip-align-btn"
+            [class.ip-align-btn--active]="alignment() === null"
+            aria-label="Sin alineación"
+            [attr.aria-pressed]="alignment() === null"
+            (click)="alignment.set(null)">
+            <app-icon name="minus" [size]="14" />
+          </button>
+          <button
+            type="button"
+            class="ip-align-btn"
+            [class.ip-align-btn--active]="alignment() === 'left'"
+            aria-label="Alinear a la izquierda"
+            [attr.aria-pressed]="alignment() === 'left'"
+            (click)="alignment.set('left')">
+            <app-icon name="align-left" [size]="14" />
+          </button>
+          <button
+            type="button"
+            class="ip-align-btn"
+            [class.ip-align-btn--active]="alignment() === 'center'"
+            aria-label="Centrar"
+            [attr.aria-pressed]="alignment() === 'center'"
+            (click)="alignment.set('center')">
+            <app-icon name="align-center" [size]="14" />
+          </button>
+          <button
+            type="button"
+            class="ip-align-btn"
+            [class.ip-align-btn--active]="alignment() === 'right'"
+            aria-label="Alinear a la derecha"
+            [attr.aria-pressed]="alignment() === 'right'"
+            (click)="alignment.set('right')">
+            <app-icon name="align-right" [size]="14" />
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Acciones -->
+  <div class="ip-actions">
+    <button type="button" class="ip-btn ip-btn--cancel" (click)="cancelRequest.emit()">
+      Cancelar
+    </button>
+    @if (selectedFile()) {
+      <button #insertBtn type="button" class="ip-btn ip-btn--insert" (click)="handleInsert()">
+        Insertar imagen
+      </button>
+    }
+  </div>
+
+  <!-- File input oculto -->
+  <input
+    #fileInputEl
+    type="file"
+    accept="image/*"
+    style="display: none"
+    aria-hidden="true"
+    (change)="onFileSelected($any($event))" />
+</div>
