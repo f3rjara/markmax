@@ -6,7 +6,7 @@
   "start_url": "./",
   "icons": [
     {
-      "src": "markmax.svg",
+      "src": "markmax-bg.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
