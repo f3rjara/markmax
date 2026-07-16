@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import Dexie, { Table } from 'dexie';
 import { MarkdownFile } from '../models/markdown-file.model';
 import { MarkdownImage } from '../models/markdown-image.model';
-import { DB_NAME } from '../../shared/text.constants';
+import { DB_NAME } from '../../shared/constants/text.constants';
 
 /**
  * Definición del esquema de la base de datos IndexedDB.

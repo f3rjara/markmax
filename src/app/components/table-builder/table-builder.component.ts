@@ -9,8 +9,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IconComponent } from '../icon/icon.component';
-
-export type ColumnAlignment = 'left' | 'center' | 'right';
+import { ColumnAlignment } from '../../shared/types/table.type';
 
 /** Escapa pipes para que no rompan el Markdown de tabla */
 function escapeCell(value: string): string {

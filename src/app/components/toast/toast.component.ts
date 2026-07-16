@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ToastService } from '../../core/services/toast.service';
-import { IconComponent, IconName } from '../icon/icon.component';
+import { IconComponent } from '../icon/icon.component';
+import { IconName } from '../../shared/types/icon.type';
 
 @Component({
   selector: 'app-toast',

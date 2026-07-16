@@ -10,14 +10,7 @@ import {
 } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
 import { ImageAlignment } from '../../core/models/markdown-image.model';
-
-export interface ImagePickResult {
-  blob: Blob;
-  mimeType: string;
-  name: string;
-  alt: string;
-  alignment: ImageAlignment;
-}
+import { ImagePickResult } from '../../shared/models/image-picker.model';
 
 @Component({
   selector: 'app-image-picker',

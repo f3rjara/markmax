@@ -1,22 +1,7 @@
 import { Component, input, output } from '@angular/core';
-import {
-  MARKDOWN_TOOLS,
-  MarkdownFormatType,
-  MarkdownToolGroup,
-} from '../../core/models/markdown-format.model';
+import { MARKDOWN_TOOLS, MarkdownFormatType } from '../../core/models/markdown-format.model';
 import { IconComponent } from '../icon/icon.component';
-import { IconName } from '../icon/icon.component';
-
-/** Orden de renderizado de los grupos */
-const GROUP_ORDER: MarkdownToolGroup[] = [
-  MarkdownToolGroup.Text,
-  MarkdownToolGroup.Media,
-  MarkdownToolGroup.Tables,
-  MarkdownToolGroup.Links,
-  MarkdownToolGroup.Lists,
-  MarkdownToolGroup.Blocks,
-  MarkdownToolGroup.Headings,
-];
+import { GROUP_ORDER } from '../../shared/constants/markdown-tools-groups.constant';
 
 @Component({
   selector: 'app-markdown-tools-menu',

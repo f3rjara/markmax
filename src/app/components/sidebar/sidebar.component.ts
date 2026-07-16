@@ -6,11 +6,9 @@ import { DatabaseService } from '../../core/services/database.service';
 import { IconComponent } from '../icon/icon.component';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { ExportDialogComponent } from '../export-dialog/export-dialog.component';
-import { TRASH_EXPIRY_DAYS } from '../../shared/text.constants';
+import { TRASH_EXPIRY_DAYS } from '../../shared/constants/text.constants';
 import JSZip from 'jszip';
-
-/** Seccion del sidebar que origino la apertura del menu contextual. */
-type MenuSection = 'active' | 'archived' | 'deleted';
+import { MenuSection } from '../../shared/types/menu.type';
 
 /**
  * Panel lateral con lista de archivos Markdown, busqueda local,

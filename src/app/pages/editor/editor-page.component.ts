@@ -11,9 +11,10 @@ import { RelativeTimePipe } from '../../shared/pipes/relative-time.pipe';
 import { MarkdownToolsMenuComponent } from '../../components/markdown-tools/markdown-tools-menu.component';
 import { MarkdownFormatType } from '../../core/models/markdown-format.model';
 import { TableBuilderComponent } from '../../components/table-builder/table-builder.component';
-import { ImagePickerComponent, ImagePickResult } from '../../components/image-picker/image-picker.component';
-import { ImageUrlPickerComponent, ImageUrlResult } from '../../components/image-url-picker/image-url-picker.component';
+import { ImagePickerComponent } from '../../components/image-picker/image-picker.component';
+import { ImageUrlPickerComponent } from '../../components/image-url-picker/image-url-picker.component';
 import { DatabaseService } from '../../core/services/database.service';
+import { ImagePickResult, ImageUrlResult } from '../../shared/models/image-picker.model';
 
 @Component({
   selector: 'app-editor-page',

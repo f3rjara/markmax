@@ -4,7 +4,7 @@ import { Subject, debounceTime } from 'rxjs';
 import { MarkdownFile } from '../models/markdown-file.model';
 import { ViewMode } from '../models/view-mode.enum';
 import { FileRepository } from '../repositories/file-repository';
-import { AUTOSAVE_DEBOUNCE_MS } from '../../shared/text.constants';
+import { AUTOSAVE_DEBOUNCE_MS } from '../../shared/constants/text.constants';
 
 @Injectable({ providedIn: 'root' })
 export class EditorStateService {

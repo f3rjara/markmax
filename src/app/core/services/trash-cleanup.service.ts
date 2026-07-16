@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { FileRepository } from '../repositories/file-repository';
-import { TRASH_EXPIRY_MS } from '../../shared/text.constants';
+import { TRASH_EXPIRY_MS } from '../../shared/constants/text.constants';
 
 /**
  * Servicio de limpieza automática de archivos vencidos en la papelera.

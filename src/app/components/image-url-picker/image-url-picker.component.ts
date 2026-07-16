@@ -1,12 +1,7 @@
 import { Component, ElementRef, output, signal, viewChild, afterNextRender } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
 import { ImageAlignment } from '../../core/models/markdown-image.model';
-
-export interface ImageUrlResult {
-  url: string;
-  alt: string;
-  alignment: ImageAlignment;
-}
+import { ImageUrlResult } from '../../shared/models/image-picker.model';
 
 @Component({
   selector: 'app-image-url-picker',

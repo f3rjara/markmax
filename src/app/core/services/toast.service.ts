@@ -1,12 +1,6 @@
 import { Injectable, signal } from '@angular/core';
-
-export type ToastType = 'success' | 'info' | 'warning' | 'error';
-
-export interface Toast {
-  id: string;
-  message: string;
-  type: ToastType;
-}
+import { Toast } from '../../shared/models/toast.model';
+import { ToastType } from '../../shared/types/toast.type';
 
 /**
  * Servicio de notificaciones tipo toast.
