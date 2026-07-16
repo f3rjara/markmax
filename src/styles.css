@@ -28,12 +28,93 @@
 .prose-mm pre {
   background: var(--tw-prose-pre-bg) !important;
   border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 8px;
+  border-radius: 0 0 8px 8px;
+  margin-top: 0;
 }
 
 .prose-mm pre code.hljs {
   background: transparent !important;
   padding: 0;
+}
+
+/* ── Bloques de codigo con boton copiar ── */
+.mm-code-block-wrapper {
+  position: relative;
+  margin: 1.25em 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.mm-code-block-wrapper pre {
+  border: none;
+  border-radius: 0;
+  margin: 0;
+}
+
+.mm-code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: rgba(139, 92, 246, 0.08);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.12);
+  min-height: 32px;
+}
+
+.mm-code-lang-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9d93a8;
+  user-select: none;
+}
+
+.mm-copy-code-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #9d93a8;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, background 0.15s, color 0.15s;
+}
+
+.mm-code-block-wrapper:hover .mm-copy-code-btn {
+  opacity: 1;
+}
+
+.mm-copy-code-btn:hover {
+  background: rgba(139, 92, 246, 0.18);
+  color: #c4b5fd;
+}
+
+.mm-copy-code-btn:active {
+  background: rgba(139, 92, 246, 0.28);
+}
+
+.mm-copy-code-btn .mm-check-icon {
+  display: none;
+}
+
+.mm-copy-code-btn.mm-copied {
+  opacity: 1;
+  color: #22c55e;
+}
+
+.mm-copy-code-btn.mm-copied .mm-copy-icon {
+  display: none;
+}
+
+.mm-copy-code-btn.mm-copied .mm-check-icon {
+  display: flex;
 }
 
 /* ── Tablas en el preview ── */
