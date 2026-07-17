@@ -55,4 +55,11 @@ md.renderer.rules.image = (tokens, idx) => {
   return html;
 };
 
+// Regla personalizada de code_inline: wrapper para inyeccion de boton copiar via DOM
+const defaultCodeInlineRenderer = md.renderer.rules.code_inline!.bind(md.renderer.rules);
+md.renderer.rules.code_inline = (tokens, idx, options, env, self) => {
+  const defaultOutput = defaultCodeInlineRenderer(tokens, idx, options, env, self);
+  return `<span class="mm-inline-code-wrapper">${defaultOutput}</span>`;
+};
+
 export { md };

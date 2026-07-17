@@ -262,6 +262,72 @@
   font-size: 0.875em;
 }
 
+/* Anular backticks decorativos que agrega @tailwindcss/typography */
+.prose-mm :where(code):not(:where([class~='not-prose'], [class~='not-prose'] *))::before,
+.prose-mm :where(code):not(:where([class~='not-prose'], [class~='not-prose'] *))::after {
+  content: none;
+}
+
+/* ── Inline code con boton copiar ── */
+.mm-inline-code-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
+.mm-inline-code-wrapper code {
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+
+.mm-inline-code-wrapper:hover code {
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+
+.mm-copy-inline-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0;
+  height: 100%;
+  padding: 4px;
+  border: none;
+  border-radius: 0 0.25rem 0.25rem 0;
+  background: rgba(124, 58, 237, 0.35);
+  color: #9d93a8;
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    width 0.15s ease,
+    opacity 0.15s ease,
+    color 0.15s;
+  vertical-align: middle;
+}
+
+.mm-inline-code-wrapper:hover .mm-copy-inline-btn {
+  width: 24px;
+  opacity: 1;
+}
+
+.mm-copy-inline-btn:hover {
+  color: #c4b5fd;
+  background: rgba(124, 58, 237, 0.5);
+}
+
+.mm-copy-inline-btn .mm-check-icon {
+  display: none;
+}
+
+.mm-copy-inline-btn.mm-copied .mm-copy-icon {
+  display: none;
+}
+
+.mm-copy-inline-btn.mm-copied .mm-check-icon {
+  display: inline-flex;
+  color: #34d399;
+}
+
 @theme {
   --color-mm-bg: #0f0e17;
   --color-mm-sidebar: #13111a;

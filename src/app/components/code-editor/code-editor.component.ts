@@ -23,11 +23,9 @@ import {
 } from '@codemirror/view';
 import { EditorState, SelectionRange } from '@codemirror/state';
 import {
-  foldGutter,
   syntaxHighlighting,
   defaultHighlightStyle,
   bracketMatching,
-  foldKeymap,
 } from '@codemirror/language';
 import { history, historyKeymap } from '@codemirror/commands';
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
@@ -39,7 +37,7 @@ import { MarkdownFormatType } from '../../core/models/markdown-format.model';
 
 @Component({
   selector: 'app-code-editor',
-  template: `<section #editorHost class="h-full w-full overflow-auto editor-host"></section>`,
+  template: `<section #editorHost class="h-full w-full overflow-hidden editor-host"></section>`,
   host: { class: 'block h-full w-full' },
 })
 export class CodeEditorComponent implements OnDestroy {
@@ -284,7 +282,6 @@ export class CodeEditorComponent implements OnDestroy {
       highlightActiveLineGutter(),
       highlightSpecialChars(),
       history(),
-      foldGutter(),
       drawSelection(),
       dropCursor(),
       EditorState.allowMultipleSelections.of(true),
@@ -294,12 +291,7 @@ export class CodeEditorComponent implements OnDestroy {
       crosshairCursor(),
       highlightActiveLine(),
       highlightSelectionMatches(),
-      keymap.of([
-        ...historyKeymap,
-        ...foldKeymap,
-        ...searchKeymap,
-        ...lintKeymap,
-      ]),
+      keymap.of([...historyKeymap, ...searchKeymap, ...lintKeymap]),
     ];
 
     const state = EditorState.create({
@@ -316,6 +308,14 @@ export class CodeEditorComponent implements OnDestroy {
         EditorView.theme({
           '&': { height: '100%' },
           '.cm-scroller': { overflow: 'auto', fontFamily: 'inherit' },
+          '.cm-content, .cm-gutter': { minHeight: '100%' },
+        }),
+        EditorView.exceptionSink.of((error: any) => {
+          const msg = error?.message || String(error);
+          if (msg.includes('No tile at position')) {
+            return;
+          }
+          console.error(error);
         }),
       ],
     });
