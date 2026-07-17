@@ -35,7 +35,7 @@ jobs:
         run: npm run build -- --configuration production
 
       - name: Copy index.html to 404.html for SPA routing
-        run: cp dist/markmax/browser/index.csr.html dist/markmax/browser/404.html
+        run: cp dist/markmax/browser/index.html dist/markmax/browser/404.html
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
