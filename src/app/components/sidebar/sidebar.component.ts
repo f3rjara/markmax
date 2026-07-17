@@ -7,7 +7,7 @@ import { IconComponent } from '../icon/icon.component';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { ExportDialogComponent } from '../export-dialog/export-dialog.component';
 import { TRASH_EXPIRY_DAYS } from '../../shared/constants/text.constants';
-import JSZip from 'jszip';
+import { zipSync, strToU8 } from 'fflate';
 import { MenuSection } from '../../shared/types/menu.type';
 
 /**
@@ -235,18 +235,23 @@ export class SidebarComponent {
     if (!file) return;
 
     this.closeExportDialog();
-    const zip = new JSZip();
+    const imageFiles: Record<string, Uint8Array> = {};
+    const content = await this.resolveImagesZip(file.content, imageFiles);
 
-    const imagesDir = zip.folder('images');
-    const content = await this.resolveImagesZip(file.content, imagesDir!);
+    const safeName = file.title.replace(/[^a-z0-9_\-\s]/gi, '').trim() || 'untitled';
+    const zipData: Record<string, Uint8Array> = {
+      [`${safeName}.md`]: strToU8(content),
+    };
+    for (const [name, data] of Object.entries(imageFiles)) {
+      zipData[`images/${name}`] = data;
+    }
 
-    zip.file(`${file.title.replace(/[^a-z0-9_\-\s]/gi, '').trim() || 'untitled'}.md`, content);
-
-    const blob = await zip.generateAsync({ type: 'blob' });
+    const zipped = zipSync(zipData);
+    const blob = new Blob([zipped], { type: 'application/zip' });
     const url = URL.createObjectURL(blob);
     const anchor = this.doc.createElement('a');
     anchor.href = url;
-    anchor.download = `${file.title.replace(/[^a-z0-9_\-\s]/gi, '').trim() || 'untitled'}.zip`;
+    anchor.download = `${safeName}.zip`;
     anchor.click();
     URL.revokeObjectURL(url);
     this.closeMenu();
@@ -311,7 +316,10 @@ export class SidebarComponent {
     return resolved;
   }
 
-  private async resolveImagesZip(content: string, imagesDir: JSZip): Promise<string> {
+  private async resolveImagesZip(
+    content: string,
+    imageFiles: Record<string, Uint8Array>,
+  ): Promise<string> {
     const uuidRe = /mm-image:\/\/([a-f0-9-]+)/g;
     const uuids = new Set<string>();
     let match;
@@ -337,7 +345,7 @@ export class SidebarComponent {
 
       const ext = extMap[img.mimeType] || '.bin';
       const filename = `${uuid}${ext}`;
-      imagesDir.file(filename, img.data);
+      imageFiles[filename] = new Uint8Array(await img.data.arrayBuffer());
 
       resolved = resolved.replace(
         new RegExp(`\\(mm-image://${uuid}(\\s+"[^"]*")?\\)`, 'g'),
