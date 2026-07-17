@@ -1,0 +1,128 @@
+name: CI - Build, Release & Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production
+        run: npm run build -- --configuration production
+
+      - name: Copy index.html to 404.html for SPA routing
+        run: cp dist/markmax/browser/index.csr.html dist/markmax/browser/404.html
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/markmax/browser
+          retention-days: 1
+
+  release:
+    name: Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version from package.json
+        id: pkg_version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check if tag already exists
+        id: check_tag
+        run: |
+          if git ls-remote --tags origin "refs/tags/v${{ steps.pkg_version.outputs.version }}" | grep -q .; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download build artifact
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: build-output
+
+      - name: Create release archive
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          cd build-output
+          tar -czf ../markmax-${{ steps.pkg_version.outputs.tag }}.tar.gz .
+          cd ..
+          zip -r markmax-${{ steps.pkg_version.outputs.tag }}.zip build-output/
+
+      - name: Create GitHub Release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.pkg_version.outputs.tag }}
+          name: MarkMax ${{ steps.pkg_version.outputs.tag }}
+          body: |
+            ## MarkMax ${{ steps.pkg_version.outputs.tag }}
+
+            Release automatico generado desde el commit `${{ github.sha }}`.
+
+            ### Cambios
+            Ver los commits incluidos en esta version en el [historial de cambios](https://github.com/${{ github.repository }}/compare/...v${{ steps.pkg_version.outputs.version }}).
+          files: |
+            markmax-${{ steps.pkg_version.outputs.tag }}.tar.gz
+            markmax-${{ steps.pkg_version.outputs.tag }}.zip
+          generate_release_notes: true
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: build-output
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build-output
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

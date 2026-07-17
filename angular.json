@@ -28,6 +28,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/markmax/",
               "budgets": [
                 {
                   "type": "initial",
