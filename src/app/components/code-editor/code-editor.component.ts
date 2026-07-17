@@ -23,9 +23,11 @@ import {
 } from '@codemirror/view';
 import { EditorState, SelectionRange } from '@codemirror/state';
 import {
+  foldGutter,
   syntaxHighlighting,
   defaultHighlightStyle,
   bracketMatching,
+  foldKeymap,
 } from '@codemirror/language';
 import { history, historyKeymap } from '@codemirror/commands';
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
@@ -282,6 +284,7 @@ export class CodeEditorComponent implements OnDestroy {
       highlightActiveLineGutter(),
       highlightSpecialChars(),
       history(),
+      foldGutter(),
       drawSelection(),
       dropCursor(),
       EditorState.allowMultipleSelections.of(true),
@@ -291,7 +294,7 @@ export class CodeEditorComponent implements OnDestroy {
       crosshairCursor(),
       highlightActiveLine(),
       highlightSelectionMatches(),
-      keymap.of([...historyKeymap, ...searchKeymap, ...lintKeymap]),
+      keymap.of([...historyKeymap, ...foldKeymap, ...searchKeymap, ...lintKeymap]),
     ];
 
     const state = EditorState.create({
@@ -308,14 +311,6 @@ export class CodeEditorComponent implements OnDestroy {
         EditorView.theme({
           '&': { height: '100%' },
           '.cm-scroller': { overflow: 'auto', fontFamily: 'inherit' },
-          '.cm-content, .cm-gutter': { minHeight: '100%' },
-        }),
-        EditorView.exceptionSink.of((error: any) => {
-          const msg = error?.message || String(error);
-          if (msg.includes('No tile at position')) {
-            return;
-          }
-          console.error(error);
         }),
       ],
     });
