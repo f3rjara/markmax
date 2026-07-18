@@ -414,3 +414,33 @@
 .cursor-pointer {
   cursor: pointer;
 }
+
+/* ── Window Controls Overlay (PWA instalada en desktop) ── */
+/* Solo aplica cuando la app instalada corre con la barra de titulo superpuesta */
+@media (display-mode: window-controls-overlay) {
+  /* La franja superior de la app actua como barra de titulo arrastrable */
+  .mm-drag-region {
+    app-region: drag;
+    -webkit-app-region: drag;
+  }
+
+  /* Los controles interactivos dentro de la barra deben seguir siendo clicables */
+  .mm-drag-region button,
+  .mm-drag-region a,
+  .mm-drag-region input {
+    app-region: no-drag;
+    -webkit-app-region: no-drag;
+  }
+
+  /* macOS: los semaforos quedan a la izquierda (sobre la cabecera del sidebar) */
+  #sidebar-nav .mm-drag-region {
+    padding-inline-start: calc(env(titlebar-area-x, 0px) + 1rem);
+  }
+
+  /* Windows: min/max/cerrar quedan a la derecha (sobre la cabecera principal) */
+  header.mm-drag-region {
+    padding-inline-end: calc(
+      100vw - env(titlebar-area-x, 100vw) - env(titlebar-area-width, 0px) + 1rem
+    );
+  }
+}

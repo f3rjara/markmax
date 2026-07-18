@@ -1,27 +1,55 @@
 {
   "name": "Markmax",
   "short_name": "markmax",
+  "id": "./",
+  "description": "Tu editor Markdown local — v1.2.2",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
+  ],
   "scope": "./",
   "start_url": "./",
   "icons": [
     {
-      "src": "markmax-bg.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "maskable any"
+      "purpose": "maskable"
     },
     {
       "src": "icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable any"
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "images/markmax-desktop.webp",
+      "sizes": "1282x677",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Markmax en escritorio"
+    },
+    {
+      "src": "images/markmax-mobile.webp",
+      "sizes": "378x778",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Markmax en móvil"
     }
   ]
 }
