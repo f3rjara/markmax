@@ -38,14 +38,14 @@
   ],
   "screenshots": [
     {
-      "src": "images/markmax-desktop.jpg",
+      "src": "images/markmax-desktop.webp",
       "sizes": "1282x677",
       "type": "image/jpeg",
       "form_factor": "wide",
       "label": "Markmax en escritorio"
     },
     {
-      "src": "images/markmax-mobile.jpg",
+      "src": "images/markmax-mobile.webp",
       "sizes": "378x778",
       "type": "image/jpeg",
       "form_factor": "narrow",
