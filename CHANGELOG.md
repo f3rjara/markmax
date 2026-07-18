@@ -2,6 +2,18 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.3.1] - 2026-07-18
+
+### Agregado
+
+- Localización en español de las frases y del panel de búsqueda de CodeMirror.
+- Estilos globales para la barra de desplazamiento (scrollbar) adaptados a la identidad visual de la marca.
+- Implementación de un tema personalizado (`thememirror`) para el editor de código en sustitución de `@codemirror/theme-one-dark`.
+
+### Modificado
+
+- Refactorización de la configuración y estilos de CodeMirror para modularizar la inicialización, temas, y traducciones.
+
 ## [1.3.0] - 2026-07-17
 
 ### Agregado

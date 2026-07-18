@@ -9,33 +9,11 @@ import {
   output,
   viewChild,
 } from '@angular/core';
-import {
-  lineNumbers,
-  highlightActiveLineGutter,
-  highlightSpecialChars,
-  drawSelection,
-  dropCursor,
-  rectangularSelection,
-  crosshairCursor,
-  highlightActiveLine,
-  keymap,
-  EditorView,
-} from '@codemirror/view';
+import { EditorView } from '@codemirror/view';
 import { EditorState, SelectionRange } from '@codemirror/state';
-import {
-  foldGutter,
-  syntaxHighlighting,
-  defaultHighlightStyle,
-  bracketMatching,
-  foldKeymap,
-} from '@codemirror/language';
-import { history, historyKeymap } from '@codemirror/commands';
-import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
-import { lintKeymap } from '@codemirror/lint';
-import { markdown } from '@codemirror/lang-markdown';
-import { languages } from '@codemirror/language-data';
-import { oneDark } from '@codemirror/theme-one-dark';
 import { MarkdownFormatType } from '../../core/models/markdown-format.model';
+import { buildEditorExtensions } from './codemirror-extensions';
+import { FORMAT_ACTIONS } from './format-actions';
 
 @Component({
   selector: 'app-code-editor',
@@ -82,62 +60,25 @@ export class CodeEditorComponent implements OnDestroy {
   applyFormat(type: MarkdownFormatType): void {
     if (!this.view) return;
 
-    switch (type) {
-      case MarkdownFormatType.Bold:
-        this.applyInlineWrap('**', '**', 'texto en negrita');
-        break;
-      case MarkdownFormatType.Italic:
-        this.applyInlineWrap('*', '*', 'texto en cursiva');
-        break;
-      case MarkdownFormatType.Strikethrough:
-        this.applyInlineWrap('~~', '~~', 'texto tachado');
-        break;
-      case MarkdownFormatType.InlineCode:
-        this.applyInlineWrap('`', '`', 'código');
-        break;
-      case MarkdownFormatType.Link:
-        this.applyLink();
-        break;
-      case MarkdownFormatType.H1:
-        this.applyLinePrefix('# ');
-        break;
-      case MarkdownFormatType.H2:
-        this.applyLinePrefix('## ');
-        break;
-      case MarkdownFormatType.H3:
-        this.applyLinePrefix('### ');
-        break;
-      case MarkdownFormatType.H4:
-        this.applyLinePrefix('#### ');
-        break;
-      case MarkdownFormatType.H5:
-        this.applyLinePrefix('##### ');
-        break;
-      case MarkdownFormatType.H6:
-        this.applyLinePrefix('###### ');
-        break;
-      case MarkdownFormatType.UnorderedList:
-        this.applyLinePrefix('- ');
-        break;
-      case MarkdownFormatType.OrderedList:
-        this.applyLinePrefix('1. ');
-        break;
-      case MarkdownFormatType.TaskList:
-        this.applyLinePrefix('- [ ] ');
-        break;
-      case MarkdownFormatType.BlockQuote:
-        this.applyLinePrefix('> ');
-        break;
-      case MarkdownFormatType.CodeBlock:
-        this.insertBlock('```\n\n```', 4);
-        break;
-      case MarkdownFormatType.HR:
-        this.insertBlock('---', 3);
-        break;
-      case MarkdownFormatType.Table:
-        // La tabla se inserta via insertRaw() desde el EditorPageComponent
-        // cuando el TableBuilderComponent emite el Markdown generado.
-        break;
+    // Link se maneja aparte por tener logica de seleccion especial.
+    // Table/Image/ImageUrl se insertan externamente via insertRaw().
+    if (type === MarkdownFormatType.Link) {
+      this.applyLink();
+    } else {
+      const action = FORMAT_ACTIONS.get(type);
+      if (action) {
+        switch (action.kind) {
+          case 'inlineWrap':
+            this.applyInlineWrap(action.open, action.close, action.placeholder);
+            break;
+          case 'linePrefix':
+            this.applyLinePrefix(action.prefix);
+            break;
+          case 'block':
+            this.insertBlock(action.block, action.cursorOffset);
+            break;
+        }
+      }
     }
 
     this.view.focus();
@@ -279,40 +220,15 @@ export class CodeEditorComponent implements OnDestroy {
   }
 
   private initEditor(): void {
-    const customSetup = [
-      lineNumbers(),
-      highlightActiveLineGutter(),
-      highlightSpecialChars(),
-      history(),
-      foldGutter(),
-      drawSelection(),
-      dropCursor(),
-      EditorState.allowMultipleSelections.of(true),
-      syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-      bracketMatching(),
-      rectangularSelection(),
-      crosshairCursor(),
-      highlightActiveLine(),
-      highlightSelectionMatches(),
-      keymap.of([...historyKeymap, ...foldKeymap, ...searchKeymap, ...lintKeymap]),
-    ];
+    const extensions = buildEditorExtensions((content) => {
+      if (!this.isUpdatingFromOutside) {
+        this.contentChange.emit(content);
+      }
+    });
 
     const state = EditorState.create({
       doc: this.content(),
-      extensions: [
-        customSetup,
-        markdown({ codeLanguages: languages }),
-        oneDark,
-        EditorView.updateListener.of((update) => {
-          if (update.docChanged && !this.isUpdatingFromOutside) {
-            this.contentChange.emit(update.state.doc.toString());
-          }
-        }),
-        EditorView.theme({
-          '&': { height: '100%' },
-          '.cm-scroller': { overflow: 'auto', fontFamily: 'inherit' },
-        }),
-      ],
+      extensions,
     });
 
     this.view = new EditorView({

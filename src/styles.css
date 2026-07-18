@@ -444,3 +444,35 @@
     );
   }
 }
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0e17; /* var(--color-mm-bg) */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2438; /* var(--color-mm-surface-hover) */
+  border-radius: 6px;
+  border: 3px solid #0f0e17; /* Igual al track para efecto padding */
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7c3aed; /* var(--color-mm-accent) */
+}
+
+::-webkit-scrollbar-corner {
+  background: #0f0e17;
+}
+
+/* Para Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a2438 #0f0e17;
+}
+
