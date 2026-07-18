@@ -40,4 +40,6 @@ export type IconName =
   | 'align-left'
   | 'align-center'
   | 'align-right'
-  | 'image';
+  | 'image'
+  | 'refresh-cw';
+
