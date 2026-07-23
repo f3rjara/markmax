@@ -10,7 +10,11 @@ import { AUTOSAVE_DEBOUNCE_MS } from '../../shared/constants/text.constants';
 export class EditorStateService {
   private readonly repo = inject(FileRepository);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly contentChange$ = new Subject<string>();
+  private readonly contentChange$ = new Subject<void>();
+  /** Último contenido emitido por el editor aún no persistido (ventana del debounce). */
+  private pendingSave: { id: string; content: string } | null = null;
+  /** Cola serializada de escrituras para que el debounce y los flush no se crucen. */
+  private saveQueue: Promise<void> = Promise.resolve();
 
   readonly files = signal<MarkdownFile[]>([]);
   readonly archivedFiles = signal<MarkdownFile[]>([]);
@@ -30,37 +34,31 @@ export class EditorStateService {
     this.loadAll();
     this.contentChange$
       .pipe(debounceTime(AUTOSAVE_DEBOUNCE_MS), takeUntilDestroyed(this.destroyRef))
-      .subscribe((content) => {
-        const activeFile = this.activeFile();
-        if (!activeFile) return;
-
-        const changes: Partial<MarkdownFile> = { content };
-        if (!activeFile.hasCustomTitle) {
-          const firstLine = content.split('\n')[0] ?? '';
-          if (firstLine.startsWith('# ')) {
-            const extracted = firstLine.slice(2).trim();
-            if (extracted) {
-              changes.title = extracted;
-            }
-          }
-        }
-        void this.updateActiveFile(changes);
-      });
+      .subscribe(() => void this.flushPendingSave());
   }
 
   /**
    * Alterna el modo de visualización entre código y preview.
    */
   toggleViewMode(): void {
+    // Flush para que el preview muestre el contenido recién escrito
+    void this.flushPendingSave();
     this.viewMode.update((mode) => (mode === ViewMode.Code ? ViewMode.Preview : ViewMode.Code));
   }
 
   /**
    * Encola un cambio de contenido para persistirlo con debounce (400ms).
+   * El `id` se captura en el momento de la escritura para que el guardado
+   * siempre se aplique al archivo que originó el contenido.
    * @param content Nuevo contenido Markdown del archivo activo.
    */
   updateContent(content: string): void {
-    this.contentChange$.next(content);
+    const id = this.activeFileId();
+    if (!id) {
+      return;
+    }
+    this.pendingSave = { id, content };
+    this.contentChange$.next();
   }
 
   /**
@@ -84,15 +82,13 @@ export class EditorStateService {
 
   /**
    * Recarga solo la lista de archivos activos.
+   * No activa `isLoading`: es una recarga silenciosa para no destruir y
+   * recrear el DOM del sidebar (placeholder "Cargando..." → parpadeo).
+   * El indicador de carga inicial es responsabilidad de {@link loadAll}.
    */
   async loadFiles(): Promise<void> {
-    this.isLoading.set(true);
-    try {
-      const active = await this.repo.getActive();
-      this.files.set(active);
-    } finally {
-      this.isLoading.set(false);
-    }
+    const active = await this.repo.getActive();
+    this.files.set(active);
   }
 
   /**
@@ -105,9 +101,14 @@ export class EditorStateService {
 
   /**
    * Selecciona un archivo como activo, o limpia la selección si `id` es `null`.
+   * Antes de cambiar, guarda de inmediato cualquier contenido pendiente del
+   * debounce para no perder lo escrito en los últimos 400ms.
    * @param id Identificador del archivo a seleccionar.
    */
   selectFile(id: string | null): void {
+    if (id !== this.activeFileId()) {
+      void this.flushPendingSave();
+    }
     this.activeFileId.set(id);
   }
 
@@ -117,6 +118,7 @@ export class EditorStateService {
    * @returns El identificador UUID del archivo creado.
    */
   async createFile(title = 'Untitled'): Promise<string> {
+    await this.flushPendingSave();
     const id = await this.repo.create({ title, content: '' });
     await this.loadFiles();
     this.activeFileId.set(id);
@@ -125,6 +127,9 @@ export class EditorStateService {
 
   /**
    * Actualiza el título y/o contenido del archivo actualmente seleccionado.
+   * Actualiza el signal `files` localmente (sin recargar la lista desde la DB)
+   * para no cambiar la referencia de `activeFile` en cada autoguardado:
+   * eso disparaba el effect del editor y movía el cursor al inicio.
    * No hace nada si no hay archivo activo.
    * @param changes Campos a modificar.
    */
@@ -133,8 +138,7 @@ export class EditorStateService {
     if (!id) {
       return;
     }
-    await this.repo.update(id, changes);
-    await this.loadFiles();
+    await this.enqueuePersist(id, changes);
   }
 
   /**
@@ -146,6 +150,8 @@ export class EditorStateService {
     if (!file) {
       return;
     }
+    // Flush para que el guardado en curso no pise este cambio al recargar la lista
+    await this.flushPendingSave();
     const pinned = !file.pinned;
     await this.repo.update(id, { pinned });
     await this.loadFiles();
@@ -157,6 +163,9 @@ export class EditorStateService {
    * @param newTitle Nuevo título del archivo.
    */
   async renameFile(id: string, newTitle: string): Promise<void> {
+    // Flush para que el guardado en curso (con posible título extraído del H1)
+    // no pise el renombrado explícito
+    await this.flushPendingSave();
     await this.repo.update(id, { title: newTitle, hasCustomTitle: true });
     await this.loadFiles();
   }
@@ -167,10 +176,11 @@ export class EditorStateService {
    * @param id Identificador del archivo.
    */
   async archiveFile(id: string): Promise<void> {
-    await this.repo.archive(id);
     if (this.activeFileId() === id) {
+      await this.flushPendingSave();
       this.activeFileId.set(null);
     }
+    await this.repo.archive(id);
     await this.loadAll();
   }
 
@@ -180,10 +190,11 @@ export class EditorStateService {
    * @param id Identificador del archivo.
    */
   async trashFile(id: string): Promise<void> {
-    await this.repo.moveToTrash(id);
     if (this.activeFileId() === id) {
+      await this.flushPendingSave();
       this.activeFileId.set(null);
     }
+    await this.repo.moveToTrash(id);
     await this.loadAll();
   }
 
@@ -203,5 +214,63 @@ export class EditorStateService {
   async deleteFileForever(id: string): Promise<void> {
     await this.repo.deleteForever(id);
     await this.loadAll();
+  }
+
+  // ── Helpers de autoguardado ─────────────────────────────────────────────
+
+  /**
+   * Persiste de inmediato el contenido pendiente de la ventana del debounce.
+   * Lo invoca el propio debounce y también cualquier acción que cambie o
+   * cierre el archivo activo, para no perder lo escrito en los últimos 400ms.
+   */
+  private flushPendingSave(): Promise<void> {
+    const pending = this.pendingSave;
+    if (!pending) {
+      return Promise.resolve();
+    }
+    this.pendingSave = null;
+    return this.enqueuePersist(pending.id, this.buildChanges(pending.id, pending.content));
+  }
+
+  /**
+   * Construye los cambios de un guardado de contenido, incluyendo la
+   * extracción del título desde el primer H1 si el archivo no tiene
+   * título personalizado.
+   */
+  private buildChanges(id: string, content: string): Partial<MarkdownFile> {
+    const changes: Partial<MarkdownFile> = { content };
+    const file = this.files().find((f) => f.id === id);
+    if (file && !file.hasCustomTitle) {
+      const firstLine = content.split('\n')[0] ?? '';
+      if (firstLine.startsWith('# ')) {
+        const extracted = firstLine.slice(2).trim();
+        if (extracted) {
+          changes.title = extracted;
+        }
+      }
+    }
+    return changes;
+  }
+
+  /**
+   * Actualiza el signal `files` localmente de forma optimista (manteniendo la
+   * posición del archivo en la lista) y encola la escritura en IndexedDB.
+   * Las escrituras se serializan para que un flush al cambiar de archivo
+   * no se cruce con un guardado del debounce en curso.
+   */
+  private enqueuePersist(id: string, changes: Partial<MarkdownFile>): Promise<void> {
+    // Signal primero: sidebar, título e indicador de guardado reflejan el
+    // cambio al instante, sin recargar la lista ni cambiar la referencia de
+    // `activeFile` de forma que dispare el effect del editor.
+    this.files.update((list) =>
+      list.map((f) => (f.id === id ? { ...f, ...changes, updatedAt: Date.now() } : f)),
+    );
+    this.saveQueue = this.saveQueue
+      .then(() => this.repo.update(id, changes))
+      .catch((error: unknown) => {
+        // Mantener la cola viva aunque falle una escritura
+        console.error('[EditorState] Error al guardar el archivo', error);
+      });
+    return this.saveQueue;
   }
 }

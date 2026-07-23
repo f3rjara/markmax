@@ -2,6 +2,20 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.3.2] - 2026-07-22
+
+### Corregido
+
+- Desplazamiento involuntario del cursor al inicio del editor durante el autoguardado, causado por la recarga completa de la lista de archivos desde IndexedDB en cada ciclo de persistencia.
+- Perdida de contenido escrito en los ultimos 400ms del debounce al cambiar de archivo, archivar o eliminar, por falta de flush del buffer pendiente.
+
+### Modificado
+
+- Refactorizacion del servicio `EditorStateService` para implementar actualizaciones optimistas del signal `files` sin recargar desde la base de datos en cada autoguardado.
+- Implementacion de una cola de escritura serializada (`saveQueue`) en IndexedDB para evitar condiciones de carrera entre el debounce y las acciones del usuario.
+- El componente `CodeEditorComponent` ahora recibe el `fileId` como input para detectar cambios de archivo y reinicializar el estado del editor solo cuando corresponde.
+- El metodo `loadFiles()` ya no activa el indicador de carga (`isLoading`) para evitar parpadeos innecesarios en el sidebar.
+
 ## [1.3.1] - 2026-07-18
 
 ### Agregado

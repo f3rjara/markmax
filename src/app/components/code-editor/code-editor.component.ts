@@ -22,6 +22,7 @@ import { FORMAT_ACTIONS } from './format-actions';
 })
 export class CodeEditorComponent implements OnDestroy {
   readonly content = input<string>('');
+  readonly fileId = input<string | null>(null);
   readonly contentChange = output<string>();
 
   private readonly editorHost = viewChild.required<ElementRef<HTMLDivElement>>('editorHost');
@@ -29,6 +30,8 @@ export class CodeEditorComponent implements OnDestroy {
 
   private view: EditorView | null = null;
   private isUpdatingFromOutside = false;
+  /** Archivo cuyo contenido está actualmente cargado en la vista. */
+  private syncedFileId: string | null = null;
 
   constructor() {
     afterNextRender(() => {
@@ -36,16 +39,30 @@ export class CodeEditorComponent implements OnDestroy {
     });
 
     effect(() => {
+      const id = this.fileId();
       const newContent = this.content();
-      if (this.view) {
-        const current = this.view.state.doc.toString();
-        if (current !== newContent) {
-          this.isUpdatingFromOutside = true;
-          this.view.dispatch({
-            changes: { from: 0, to: current.length, insert: newContent },
-          });
-          this.isUpdatingFromOutside = false;
-        }
+      if (!this.view) {
+        // initEditor carga el contenido inicial al crear la vista
+        return;
+      }
+      // Mientras se edita el mismo archivo, el editor es la fuente de verdad:
+      // los cambios de `content` son el round-trip del autoguardado, que puede
+      // llegar con contenido obsoleto si el usuario siguió escribiendo durante
+      // el guardado. Aplicarlo reemplazaría el documento, moviendo el cursor
+      // al inicio y perdiendo las últimas teclas. Solo se sincroniza al
+      // cambiar de archivo.
+      if (id === this.syncedFileId) {
+        return;
+      }
+      this.syncedFileId = id;
+      const current = this.view.state.doc.toString();
+      if (current !== newContent) {
+        this.isUpdatingFromOutside = true;
+        this.view.dispatch({
+          changes: { from: 0, to: current.length, insert: newContent },
+          selection: { anchor: 0 },
+        });
+        this.isUpdatingFromOutside = false;
       }
     });
   }
@@ -235,6 +252,7 @@ export class CodeEditorComponent implements OnDestroy {
       state,
       parent: this.editorHost().nativeElement,
     });
+    this.syncedFileId = this.fileId();
   }
 
   ngOnDestroy(): void {
