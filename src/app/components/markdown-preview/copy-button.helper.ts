@@ -34,6 +34,23 @@ export function injectCopyButtons(hostElement: HTMLElement): void {
     btn.innerHTML = `<span class="mm-copy-icon">${COPY_ICON_SM}</span><span class="mm-check-icon">${CHECK_ICON_SM}</span>`;
     wrapper.appendChild(btn);
   });
+
+  // Botones de links
+  const linkWrappers = hostElement.querySelectorAll('.mm-link-wrapper');
+  linkWrappers.forEach((wrapper: Element) => {
+    if (wrapper.querySelector('.mm-copy-link-btn')) return;
+
+    const a = wrapper.querySelector('a');
+    if (!a) return;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mm-copy-link-btn';
+    btn.setAttribute('aria-label', 'Copiar enlace');
+    btn.title = 'Copiar enlace';
+    btn.innerHTML = `<span class="mm-copy-icon">${COPY_ICON_SM}</span><span class="mm-check-icon">${CHECK_ICON_SM}</span>`;
+    wrapper.appendChild(btn);
+  });
 }
 
 export function setupCopyClickHandler(hostElement: HTMLElement, destroyCallback: (fn: () => void) => void): void {
@@ -68,6 +85,22 @@ export function setupCopyClickHandler(hostElement: HTMLElement, destroyCallback:
       void navigator.clipboard.writeText(textToCopy).then(() => {
         inlineBtn.classList.add('mm-copied');
         setTimeout(() => inlineBtn.classList.remove('mm-copied'), 1500);
+      });
+      return;
+    }
+
+    // Boton copiar de enlace
+    const linkBtn = target.closest('.mm-copy-link-btn');
+    if (linkBtn instanceof HTMLElement) {
+      const wrapper = linkBtn.closest('.mm-link-wrapper');
+      const a = wrapper?.querySelector('a');
+      if (!a) return;
+
+      const textToCopy = a.getAttribute('href') || '';
+
+      void navigator.clipboard.writeText(textToCopy).then(() => {
+        linkBtn.classList.add('mm-copied');
+        setTimeout(() => linkBtn.classList.remove('mm-copied'), 1500);
       });
       return;
     }

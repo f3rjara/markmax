@@ -19,7 +19,7 @@ const md = new MarkdownIt({
 
 md.enable('table');
 
-// Regla personalizada de link_open: abrir enlaces en nueva pestaña/ventana
+// Regla personalizada de link_open: abrir enlaces en nueva pestaña/ventana e inyectar wrapper para boton copiar
 const defaultLinkOpenRenderer =
   md.renderer.rules['link_open'] ||
   ((tokens, idx, options, env, self) => {
@@ -42,7 +42,17 @@ md.renderer.rules['link_open'] = (tokens, idx, options, env, self) => {
     token.attrs![relIdx][1] = 'noopener noreferrer';
   }
 
-  return defaultLinkOpenRenderer(tokens, idx, options, env, self);
+  return '<span class="mm-link-wrapper">' + defaultLinkOpenRenderer(tokens, idx, options, env, self);
+};
+
+const defaultLinkCloseRenderer =
+  md.renderer.rules['link_close'] ||
+  ((tokens, idx, options, env, self) => {
+    return self.renderToken(tokens, idx, options);
+  });
+
+md.renderer.rules['link_close'] = (tokens, idx, options, env, self) => {
+  return defaultLinkCloseRenderer(tokens, idx, options, env, self) + '</span>';
 };
 
 // Regla personalizada de fence: wrapper + header con label
