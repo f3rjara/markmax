@@ -114,6 +114,7 @@
             <app-code-editor
               class="h-full"
               [content]="editorState.activeFile()?.content ?? ''"
+              [fileId]="editorState.activeFileId()"
               (contentChange)="onContentChange($event)" />
           }
           @case (ViewMode.Preview) {
