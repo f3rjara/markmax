@@ -2,6 +2,12 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.3.4] - 2026-07-23
+
+### Agregado
+
+- Botón de copiado de URL en los enlaces del visualizador de Markdown al hacer hover, permitiendo copiar la dirección al portapapeles de forma directa.
+
 ## [1.3.3] - 2026-07-22
 
 ### Corregido

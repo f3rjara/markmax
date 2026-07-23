@@ -328,6 +328,59 @@
   color: #34d399;
 }
 
+/* ── Enlaces con boton copiar al hacer hover ── */
+.mm-link-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
+.mm-copy-link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0;
+  height: 1.1em;
+  padding: 2px 4px;
+  border: none;
+  border-radius: 0.25rem;
+  background: rgba(124, 58, 237, 0.2);
+  color: #9d93a8;
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    width 0.15s ease,
+    opacity 0.15s ease,
+    color 0.15s;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.mm-link-wrapper:hover .mm-copy-link-btn {
+  width: 20px;
+  opacity: 1;
+}
+
+.mm-copy-link-btn:hover {
+  color: #c4b5fd;
+  background: rgba(124, 58, 237, 0.4);
+}
+
+.mm-copy-link-btn .mm-check-icon {
+  display: none;
+}
+
+.mm-copy-link-btn.mm-copied .mm-copy-icon {
+  display: none;
+}
+
+.mm-copy-link-btn.mm-copied .mm-check-icon {
+  display: inline-flex;
+  color: #34d399;
+}
+
 @theme {
   --color-mm-bg: #0f0e17;
   --color-mm-sidebar: #13111a;
