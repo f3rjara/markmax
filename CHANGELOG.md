@@ -2,6 +2,13 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.3.3] - 2026-07-22
+
+### Corregido
+
+- Los enlaces en el visualizador de Markdown se abrían dentro de la misma PWA. Se configuraron para abrirse en una pestaña nueva o en el navegador externo del sistema (`target="_blank"`, `rel="noopener noreferrer"`).
+- Se actualizaron las reglas del sanitizador DOMPurify para no remover los atributos `target` y `rel` de los enlaces procesados.
+
 ## [1.3.2] - 2026-07-22
 
 ### Corregido

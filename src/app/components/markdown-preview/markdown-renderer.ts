@@ -19,6 +19,32 @@ const md = new MarkdownIt({
 
 md.enable('table');
 
+// Regla personalizada de link_open: abrir enlaces en nueva pestaña/ventana
+const defaultLinkOpenRenderer =
+  md.renderer.rules['link_open'] ||
+  ((tokens, idx, options, env, self) => {
+    return self.renderToken(tokens, idx, options);
+  });
+
+md.renderer.rules['link_open'] = (tokens, idx, options, env, self) => {
+  const token = tokens[idx];
+  const targetIdx = token.attrIndex('target');
+  if (targetIdx < 0) {
+    token.attrPush(['target', '_blank']);
+  } else {
+    token.attrs![targetIdx][1] = '_blank';
+  }
+
+  const relIdx = token.attrIndex('rel');
+  if (relIdx < 0) {
+    token.attrPush(['rel', 'noopener noreferrer']);
+  } else {
+    token.attrs![relIdx][1] = 'noopener noreferrer';
+  }
+
+  return defaultLinkOpenRenderer(tokens, idx, options, env, self);
+};
+
 // Regla personalizada de fence: wrapper + header con label
 const defaultFenceRenderer = md.renderer.rules.fence!.bind(md.renderer.rules);
 md.renderer.rules.fence = (tokens, idx, options, env, self) => {
