@@ -37,7 +37,7 @@ export class MarkdownPreviewComponent {
     const raw = md.render(text);
     return DOMPurify.sanitize(raw, {
       USE_PROFILES: { html: true },
-      ADD_ATTR: ['style', 'class'],
+      ADD_ATTR: ['style', 'class', 'target', 'rel'],
     });
   });
 
