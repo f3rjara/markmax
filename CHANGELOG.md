@@ -2,6 +2,18 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.3.5] - 2026-07-23
+
+### Agregado
+
+- Nuevas fuentes de texto
+  - CodeMirror: JetBrains Mono
+  - Preview: Space Grotesk
+
+### Modificado
+
+- Actualización de estilos globales para code, soporte lenguajes en bloques de codigo
+
 ## [1.3.4] - 2026-07-23
 
 ### Agregado

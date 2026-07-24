@@ -4,8 +4,14 @@
 @import 'highlight.js/styles/atom-one-dark.css';
 @plugin '@tailwindcss/typography';
 
+:root {
+  --font-editor: 'JetBrains Mono', 'Source Code Pro', monospace;
+  --font-preview: 'Space Grotesk', sans-serif;
+}
+
 /* Tipografía personalizada para el preview Markdown */
 .prose-mm {
+  font-family: var(--font-preview);
   --tw-prose-body: #e2dcea;
   --tw-prose-headings: #a78bfa;
   --tw-prose-lead: #b8aec8;
@@ -22,6 +28,13 @@
   --tw-prose-pre-bg: #13111a;
   --tw-prose-th-borders: rgba(139, 92, 246, 0.35);
   --tw-prose-td-borders: rgba(139, 92, 246, 0.15);
+}
+
+.prose-mm pre,
+.prose-mm code,
+.prose-mm kbd,
+.prose-mm samp {
+  font-family: var(--font-editor) !important;
 }
 
 /* ── Highlight.js styles override ── */
@@ -259,7 +272,7 @@
   background: rgba(124, 58, 237, 0.2);
   border-radius: 0.25rem;
   padding: 0.15em 0.4em;
-  font-size: 0.875em;
+  font-size: 0.9em;
 }
 
 /* Anular backticks decorativos que agrega @tailwindcss/typography */
@@ -528,4 +541,3 @@
   scrollbar-width: thin;
   scrollbar-color: #2a2438 #0f0e17;
 }
-
