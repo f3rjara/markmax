@@ -2,7 +2,7 @@
   "name": "Markmax",
   "short_name": "markmax",
   "id": "./",
-  "description": "Tu editor Markdown local — v1.3.0",
+  "description": "Tu editor Markdown local — v1.3.4",
   "display": "standalone",
   "display_override": [
     "window-controls-overlay",
