@@ -2,6 +2,12 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.4.1] - 2026-07-30
+
+### Corregido
+
+- Solucion a vulnaribilidades transitivas
+
 ## [1.4.0] - 2026-07-29
 
 ### Agregado
