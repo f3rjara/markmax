@@ -3,6 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { EditorStateService } from '../../core/services/editor-state.service';
 import { ToastService } from '../../core/services/toast.service';
 import { DatabaseService } from '../../core/services/database.service';
+import { MdFileImportService, ImportPendingReplace } from '../../core/services/md-file-import.service';
 import { IconComponent } from '../icon/icon.component';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { ExportDialogComponent } from '../export-dialog/export-dialog.component';
@@ -27,6 +28,7 @@ export class SidebarComponent {
   protected readonly editorState = inject(EditorStateService);
   protected readonly toastService = inject(ToastService);
   protected readonly db = inject(DatabaseService);
+  private readonly mdFileImport = inject(MdFileImportService);
   protected readonly searchTerm = signal('');
   readonly closeRequest = output<void>();
 
@@ -51,6 +53,9 @@ export class SidebarComponent {
   // Estado de secciones colapsables
   protected readonly archivedExpanded = signal(false);
   protected readonly deletedExpanded = signal(false);
+
+  // Estado del dialogo de confirmacion de reemplazo de importacion
+  protected readonly replaceDialog = signal<ImportPendingReplace | null>(null);
 
   private readonly doc = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
@@ -86,6 +91,25 @@ export class SidebarComponent {
 
   protected createFile(): void {
     void this.editorState.createFile();
+  }
+
+  protected importFile(): void {
+    void this.mdFileImport.importFromFile().then((pending) => {
+      if (pending) {
+        this.replaceDialog.set(pending);
+      }
+    });
+  }
+
+  protected confirmReplaceImport(): void {
+    const pending = this.replaceDialog();
+    if (!pending) return;
+    this.replaceDialog.set(null);
+    void this.mdFileImport.confirmReplace(pending);
+  }
+
+  protected cancelReplaceImport(): void {
+    this.replaceDialog.set(null);
   }
 
   protected onSearch(event: Event): void {

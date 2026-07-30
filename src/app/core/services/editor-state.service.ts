@@ -115,11 +115,12 @@ export class EditorStateService {
   /**
    * Crea un nuevo archivo, recarga la lista y lo selecciona automáticamente.
    * @param title Título del archivo. Por defecto `'Untitled'`.
+   * @param content Contenido Markdown inicial. Por defecto cadena vacía.
    * @returns El identificador UUID del archivo creado.
    */
-  async createFile(title = 'Untitled'): Promise<string> {
+  async createFile(title = 'Untitled', content = ''): Promise<string> {
     await this.flushPendingSave();
-    const id = await this.repo.create({ title, content: '' });
+    const id = await this.repo.create({ title, content });
     await this.loadFiles();
     this.activeFileId.set(id);
     return id;
@@ -139,6 +140,22 @@ export class EditorStateService {
       return;
     }
     await this.enqueuePersist(id, changes);
+  }
+
+  /**
+   * Selecciona un archivo por `id`, reemplaza su contenido y lo persiste.
+   * Usado por la importacion para actualizar un documento existente sin duplicarlo.
+   * Guarda primero cualquier cambio pendiente del archivo activo actual.
+   * @param id Identificador del archivo a actualizar.
+   * @param content Nuevo contenido Markdown.
+   */
+  async updateActiveFileById(id: string, content: string): Promise<void> {
+    await this.flushPendingSave();
+    // Actualizar el signal files ANTES de seleccionar el archivo,
+    // para que el effect del editor lea el contenido correcto al detectar
+    // el cambio de fileId.
+    await this.enqueuePersist(id, this.buildChanges(id, content));
+    this.selectFile(id);
   }
 
   /**

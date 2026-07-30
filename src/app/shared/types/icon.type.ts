@@ -41,5 +41,6 @@ export type IconName =
   | 'align-center'
   | 'align-right'
   | 'image'
-  | 'refresh-cw';
+  | 'refresh-cw'
+  | 'upload';
 

@@ -2,6 +2,17 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.4.0] - 2026-07-29
+
+### Agregado
+
+- Permite subir archivos mediante el boton de importacion de la barra lateral
+
+### Modificado
+
+- Diálogo de confirmación de reemplazo de importación
+- Permite al usuario confirmar el reemplazo de un archivo existente al importar uno nuevo con el mismo nombre.
+
 ## [1.3.5] - 2026-07-23
 
 ### Agregado
