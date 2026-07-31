@@ -22,6 +22,8 @@
         type="button"
         class="flex items-center justify-center w-7 h-7 rounded-md text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
         aria-label="Crear nuevo archivo"
+        appTooltip="Nuevo archivo"
+        tooltipPosition="bottom"
         (click)="createFile()">
         <app-icon name="plus" [size]="16" />
       </button>
@@ -29,15 +31,17 @@
         type="button"
         class="flex items-center justify-center w-7 h-7 rounded-md text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
         aria-label="Cargar archivo Markdown"
-        title="Cargar archivo .md"
+        appTooltip="Cargar archivo .md"
+        tooltipPosition="bottom"
         (click)="importFile()">
         <app-icon name="upload" [size]="16" />
       </button>
       <button
         type="button"
-        title="Cerrar panel lateral"
         class="flex items-center justify-center w-7 h-7 rounded-md text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
         aria-label="Cerrar panel lateral"
+        appTooltip="Cerrar panel"
+        tooltipPosition="bottom"
         (click)="closeRequest.emit()">
         <app-icon name="panel-left" [size]="16" />
       </button>

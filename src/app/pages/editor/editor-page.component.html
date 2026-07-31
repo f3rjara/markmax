@@ -18,9 +18,10 @@
       @if (!sidebarOpen()) {
         <button
           type="button"
-          title="Abrir panel lateral"
-          class="flex items-center justify-center w-8 h-8 rounded-md shrink-0 text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent"
-          aria-label="Abrir panel lateral"
+          class="flex items-center justify-center w-8 h-8 rounded-md shrink-0 text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
+          aria-label="Abrir panel"
+          appTooltip="Abrir panel"
+          tooltipPosition="bottom"
           (click)="toggleSidebar()">
           <app-icon name="panel-left" [size]="18" />
         </button>
@@ -57,7 +58,9 @@
               [class.text-mm-accent]="toolsMenuOpen()"
               [attr.aria-expanded]="toolsMenuOpen()"
               aria-haspopup="menu"
-              aria-label="Abrir herramientas rápidas"
+              aria-label="Abrir herramientas rapidas"
+              appTooltip="Herramientas de formato"
+              tooltipPosition="bottom"
               (click)="openToolsPanel()">
               <app-icon name="plus" [size]="16" />
             </button>
@@ -85,6 +88,8 @@
                   : 'text-mm-text-secondary hover:text-mm-text'
               "
               [attr.aria-pressed]="editorState.viewMode() === ViewMode.Code"
+              appTooltip="Vista de codigo"
+              tooltipPosition="bottom"
               (click)="setViewMode(ViewMode.Code)">
               <app-icon name="code" [size]="13" />
               code
@@ -98,6 +103,8 @@
                   : 'text-mm-text-secondary hover:text-mm-text'
               "
               [attr.aria-pressed]="editorState.viewMode() === ViewMode.Preview"
+              appTooltip="Vista previa"
+              tooltipPosition="bottom"
               (click)="setViewMode(ViewMode.Preview)">
               <app-icon name="eye" [size]="13" />
               view

@@ -2,6 +2,20 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.5.1] - 2026-07-31
+
+### Agregado
+
+- Directiva `appTooltip` reutilizable con animaciones suaves de entrada y salida (fade + scale) sobre hover y foco en los iconos de accion del sidebar y del header del editor.
+- Tooltips accesibles con `role="tooltip"` y `aria-describedby` en los botones: Nuevo archivo, Cargar archivo, Cerrar/Abrir panel, Herramientas de formato, Vista de codigo y Vista previa.
+
+### Corregido
+
+- Tooltips que quedaban huerfanos en el DOM al hacer clic en botones dentro de bloques `@if` (Angular destruia el elemento sin disparar `mouseleave`). Solucionado mediante registro global de tooltips activos y limpieza en el evento `click` y en `ngOnDestroy`.
+- Tooltip nativo del navegador que aparecia duplicado junto al tooltip personalizado. La directiva elimina automaticamente el atributo `title` del elemento host al inicializarse.
+
+---
+
 ## [1.5.0] - 2026-07-31
 
 ### Agregado
