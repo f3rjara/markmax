@@ -2,6 +2,23 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.5.0] - 2026-07-31
+
+### Agregado
+
+- Funcionalidad de arrastrar y soltar archivos (drag & drop) directamente sobre el panel lateral para importar archivos `.md` y `.markdown` desde el sistema de archivos.
+- Hint informativo "Arrastra archivos aqui" fijo en el sidebar: visible en hover cuando hay 12 o menos archivos activos, posicionado entre la lista de recientes y las secciones de Archivados/Eliminados.
+- Overlay fantasma animado "Suelta aqui para cargar" que cubre el sidebar durante el arrastre, con icono pulsante y efecto de fondo desenfocado.
+- Nuevo icono `upload-cloud` al catalogo de iconos SVG disponibles (`icon.type.ts`).
+- Bloqueo de drop en el area del editor y preview para evitar que el navegador navegue al archivo soltado fuera del sidebar.
+
+### Modificado
+
+- `MdFileImportService`: metodo `importFromDrop(file: File)` expuesto publicamente para reutilizar la logica de validacion (extension, tamano, encoding, duplicados) desde el drag & drop, sin duplicar codigo.
+- `SidebarComponent`: incorpora handlers nativos de drag & drop (`dragenter`, `dragover`, `dragleave`, `drop`) con contador de entradas para evitar parpadeo del overlay en eventos de hijos. Reutiliza el dialogo de confirmacion de reemplazo existente para titulos duplicados al soltar.
+
+---
+
 ## [1.4.2] - 2026-07-30
 
 ### Agregado

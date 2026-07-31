@@ -199,3 +199,118 @@
   flex-shrink: 0;
   color: var(--color-mm-text-secondary);
 }
+
+/* ---- Drop hint informativo ---- */
+.drop-hint {
+  flex-shrink: 0;
+  margin: 8px 12px 12px;
+  border: 1.5px dashed var(--color-mm-border);
+  border-radius: 10px;
+  padding: 16px 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    border-color 0.2s ease;
+}
+
+:host(:hover) .drop-hint {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+:host(:hover) .drop-hint:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.drop-hint__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-mm-text-secondary);
+}
+
+.drop-hint__icon {
+  color: rgba(139, 92, 246, 0.5);
+  opacity: 0.8;
+}
+
+.drop-hint__text {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-align: center;
+  opacity: 0.7;
+}
+
+@keyframes drop-hint-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- Overlay fantasma durante drag ---- */
+.drop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 14, 23, 0.82);
+  backdrop-filter: blur(4px);
+  border-radius: 0;
+  border: 2px dashed rgba(139, 92, 246, 0.7);
+  animation: drop-overlay-in 0.15s ease-out;
+}
+
+.drop-overlay__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.drop-overlay__icon {
+  color: #a78bfa;
+  filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.6));
+  animation: drop-overlay-pulse 1.8s ease-in-out infinite;
+}
+
+.drop-overlay__text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f0eaf8;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes drop-overlay-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes drop-overlay-pulse {
+  0%, 100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.6));
+  }
+  50% {
+    transform: translateY(-4px);
+    filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.9));
+  }
+}
+

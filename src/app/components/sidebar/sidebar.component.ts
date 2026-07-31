@@ -24,6 +24,10 @@ import { MenuSection } from '../../shared/types/menu.type';
   imports: [IconComponent, ConfirmDialogComponent, ExportDialogComponent],
   host: {
     class: 'block h-full overflow-hidden',
+    '(dragover)': 'onDragOver($event)',
+    '(dragleave)': 'onDragLeave($event)',
+    '(dragenter)': 'onDragEnter($event)',
+    '(drop)': 'onDrop($event)',
   },
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
@@ -61,6 +65,10 @@ export class SidebarComponent {
 
   // Estado del dialogo de confirmacion de reemplazo de importacion
   protected readonly replaceDialog = signal<ImportPendingReplace | null>(null);
+
+  // Estado Drag & Drop
+  protected readonly isDraggingOver = signal(false);
+  private dragEnterCount = 0;
 
   private readonly doc = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
@@ -474,6 +482,54 @@ export class SidebarComponent {
 
   protected navigateToSettings(): void {
     void this.router.navigate(['/configuracion']);
+  }
+
+  // --- Drag & Drop de archivos ---
+
+  protected onDragEnter(event: DragEvent): void {
+    event.preventDefault();
+    // Solo activar si el drag contiene archivos del sistema
+    if (!this.hasFiles(event)) return;
+    this.dragEnterCount++;
+    this.isDraggingOver.set(true);
+  }
+
+  protected onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'copy';
+    }
+  }
+
+  protected onDragLeave(event: DragEvent): void {
+    this.dragEnterCount--;
+    if (this.dragEnterCount <= 0) {
+      this.dragEnterCount = 0;
+      this.isDraggingOver.set(false);
+    }
+  }
+
+  protected onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.dragEnterCount = 0;
+    this.isDraggingOver.set(false);
+
+    const file = event.dataTransfer?.files?.[0];
+    if (!file) return;
+
+    void this.mdFileImport.importFromDrop(file).then((pending) => {
+      if (pending) {
+        this.replaceDialog.set(pending);
+      }
+    });
+  }
+
+  /**
+   * Verifica si el evento de drag contiene archivos del sistema operativo.
+   * Evita activar el overlay cuando se arrastran elementos del propio DOM.
+   */
+  private hasFiles(event: DragEvent): boolean {
+    return Array.from(event.dataTransfer?.types ?? []).includes('Files');
   }
 
   // --- Gestion del listener externo ---

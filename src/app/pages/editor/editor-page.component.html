@@ -1,4 +1,7 @@
-<div class="flex h-screen bg-mm-bg text-mm-text overflow-hidden">
+<div
+  class="flex h-screen bg-mm-bg text-mm-text overflow-hidden"
+  (dragover)="$event.preventDefault()"
+  (drop)="$event.preventDefault()">
   <!-- Sidebar con transición -->
   <div
     class="shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out"

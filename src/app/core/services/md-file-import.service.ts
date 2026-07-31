@@ -62,6 +62,16 @@ export class MdFileImportService {
     const input = this.createFileInput();
     const file = await this.pickFile(input);
     if (!file) return null;
+    return this.importFromDrop(file);
+  }
+
+  /**
+   * Valida e importa un archivo obtenido directamente desde un evento drag & drop.
+   * Reutiliza toda la logica de validacion de importFromFile sin duplicar codigo.
+   * @param file Archivo obtenido de DataTransfer.files
+   * @returns null si el archivo se proceso sin conflicto, o ImportPendingReplace si hay titulo duplicado.
+   */
+  async importFromDrop(file: File): Promise<ImportPendingReplace | null> {
     return this.processFile(file);
   }
 
