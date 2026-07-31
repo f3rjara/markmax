@@ -1,6 +1,6 @@
 <nav
   id="sidebar-nav"
-  class="flex flex-col h-full mm-sidebar-bg border-r border-white/[0.06]"
+  class="relative flex flex-col h-full mm-sidebar-bg border-r border-white/[0.06]"
   aria-label="Archivos">
   <!-- Cabecera -->
   <div
@@ -135,6 +135,16 @@
       </ul>
     }
   </div>
+
+  <!-- ====== Drop hint fijo (visible en hover cuando <= 12 archivos) ====== -->
+  @if (filteredFiles().length <= 12 && !isDraggingOver()) {
+    <div class="drop-hint" aria-hidden="true">
+      <div class="drop-hint__inner">
+        <app-icon name="upload-cloud" [size]="28" class="drop-hint__icon" />
+        <span class="drop-hint__text">Arrastra archivos aqui</span>
+      </div>
+    </div>
+  }
 
   <!-- ====== Seccion Archivados ====== -->
   @if (editorState.archivedFiles().length > 0 || archivedExpanded()) {
@@ -443,6 +453,20 @@
             Reemplazar
           </button>
         </div>
+      </div>
+    </div>
+  }
+
+  <!-- ====== Overlay Drag & Drop ====== -->
+  @if (isDraggingOver()) {
+    <div
+      class="drop-overlay"
+      role="status"
+      aria-live="assertive"
+      aria-label="Suelta aqui para cargar">
+      <div class="drop-overlay__inner">
+        <app-icon name="upload-cloud" [size]="48" class="drop-overlay__icon" />
+        <span class="drop-overlay__text">Suelta aqui para cargar</span>
       </div>
     </div>
   }

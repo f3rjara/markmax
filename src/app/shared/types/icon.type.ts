@@ -43,6 +43,7 @@ export type IconName =
   | 'image'
   | 'refresh-cw'
   | 'upload'
+  | 'upload-cloud'
   | 'settings'
   | 'files';
 
