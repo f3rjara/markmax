@@ -1,9 +1,13 @@
 import { Component, computed, inject, output, signal, DestroyRef } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
 import { EditorStateService } from '../../core/services/editor-state.service';
 import { ToastService } from '../../core/services/toast.service';
 import { DatabaseService } from '../../core/services/database.service';
-import { MdFileImportService, ImportPendingReplace } from '../../core/services/md-file-import.service';
+import {
+  MdFileImportService,
+  ImportPendingReplace,
+} from '../../core/services/md-file-import.service';
 import { IconComponent } from '../icon/icon.component';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { ExportDialogComponent } from '../export-dialog/export-dialog.component';
@@ -17,7 +21,7 @@ import { MenuSection } from '../../shared/types/menu.type';
  */
 @Component({
   selector: 'app-sidebar',
-  imports: [IconComponent, ConfirmDialogComponent, ExportDialogComponent],
+  imports: [IconComponent, ConfirmDialogComponent, ExportDialogComponent, RouterLink],
   host: {
     class: 'block h-full overflow-hidden',
   },
@@ -29,6 +33,7 @@ export class SidebarComponent {
   protected readonly toastService = inject(ToastService);
   protected readonly db = inject(DatabaseService);
   private readonly mdFileImport = inject(MdFileImportService);
+  private readonly router = inject(Router);
   protected readonly searchTerm = signal('');
   readonly closeRequest = output<void>();
 
@@ -465,6 +470,10 @@ export class SidebarComponent {
 
   protected toggleDeleted(): void {
     this.deletedExpanded.update((v) => !v);
+  }
+
+  protected navigateToSettings(): void {
+    void this.router.navigate(['/configuracion']);
   }
 
   // --- Gestion del listener externo ---

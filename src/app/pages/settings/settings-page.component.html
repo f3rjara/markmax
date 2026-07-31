@@ -1,0 +1,65 @@
+<div class="settings-layout">
+  <!-- Panel lateral izquierdo -->
+  <aside class="settings-sidebar" aria-label="Navegacion de configuracion">
+    <div class="settings-sidebar-header">
+      <img
+        src="markmax.svg"
+        width="20"
+        height="20"
+        alt="Markmax Logo"
+        aria-hidden="true"
+        class="object-contain shrink-0" />
+      <span class="text-xs font-semibold uppercase tracking-widest text-mm-text-secondary">
+        MarkMax
+      </span>
+    </div>
+
+    <nav aria-label="Menu de configuracion">
+      <ul class="settings-nav-list">
+        <li>
+          <button
+            type="button"
+            id="settings-nav-general"
+            class="settings-nav-item settings-nav-item--active"
+            (click)="showGeneralSettings()">
+            <app-icon name="settings" [size]="15" class="settings-nav-icon" />
+            General
+          </button>
+        </li>
+
+        <li>
+          <button
+            type="button"
+            id="settings-nav-mis-archivos"
+            class="settings-nav-item"
+            aria-current="page"
+            (click)="goToEditor()">
+            <app-icon name="files" [size]="15" class="settings-nav-icon" />
+            Mis archivos
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="settings-content" id="settings-main">
+    <!-- Cabecera superior derecha con boton cerrar -->
+    <header class="settings-topbar">
+      <h1 class="settings-page-title">Configuracion</h1>
+      <button
+        type="button"
+        id="settings-close-btn"
+        class="settings-close-btn"
+        aria-label="Cerrar configuracion y volver al editor"
+        (click)="goToEditor()">
+        <app-icon name="x" [size]="18" />
+      </button>
+    </header>
+
+    <!-- Zona de contenido -->
+    <section class="settings-body" aria-label="Contenido de configuracion">
+      <p class="settings-placeholder">Proximas opciones de configuracion apareceran aqui.</p>
+    </section>
+  </main>
+</div>
