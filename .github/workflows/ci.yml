@@ -68,6 +68,31 @@ jobs:
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Extract changelog for current version
+        if: steps.check_tag.outputs.exists == 'false'
+        id: changelog
+        run: |
+          VERSION="${{ steps.pkg_version.outputs.version }}"
+          NOTES=$(awk -v ver="$VERSION" '
+            /^## \[/ {
+              if (found) exit
+              if (index($0, "[" ver "]")) found=1
+              next
+            }
+            found && /^---$/ { next }
+            found { print }
+          ' CHANGELOG.md)
+
+          if [ -z "$NOTES" ]; then
+            NOTES="No se encontraron notas en el CHANGELOG para la version $VERSION."
+          fi
+
+          {
+            echo "notes<<CHANGELOG_EOF"
+            echo "$NOTES"
+            echo "CHANGELOG_EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Download build artifact
         if: steps.check_tag.outputs.exists == 'false'
         uses: actions/download-artifact@v4
@@ -92,14 +117,14 @@ jobs:
           body: |
             ## MarkMax ${{ steps.pkg_version.outputs.tag }}
 
-            Release automatico generado desde el commit `${{ github.sha }}`.
+            ${{ steps.changelog.outputs.notes }}
 
-            ### Cambios
-            Ver los commits incluidos en esta version en el [historial de cambios](https://github.com/${{ github.repository }}/compare/...v${{ steps.pkg_version.outputs.version }}).
+            ---
+            > Release automatico desde el commit `${{ github.sha }}`
           files: |
             markmax-${{ steps.pkg_version.outputs.tag }}.tar.gz
             markmax-${{ steps.pkg_version.outputs.tag }}.zip
-          generate_release_notes: true
+          generate_release_notes: false
 
   deploy:
     name: Deploy to GitHub Pages
