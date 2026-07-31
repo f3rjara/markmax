@@ -3,13 +3,14 @@
   class="flex flex-col h-full mm-sidebar-bg border-r border-white/[0.06]"
   aria-label="Archivos">
   <!-- Cabecera -->
-  <div class="mm-drag-region flex items-center justify-between px-4 h-15 border-b border-white/[0.06] shrink-0">
+  <div
+    class="mm-drag-region flex items-center justify-between px-4 h-15 border-b border-white/[0.06] shrink-0">
     <div class="flex items-center gap-2 select-none">
       <img
         src="markmax.svg"
         width="20"
         height="20"
-        alt=""
+        alt="Markmax Logo"
         aria-hidden="true"
         class="object-contain shrink-0" />
       <span class="text-xs font-semibold uppercase tracking-widest text-mm-text-secondary">
@@ -255,6 +256,19 @@
     </div>
   }
 
+  <!-- ====== Boton Settings fijo al fondo ====== -->
+  <div class="sidebar-settings-footer">
+    <button
+      type="button"
+      id="sidebar-settings-link"
+      class="sidebar-settings-btn"
+      aria-label="Ir a configuracion"
+      (click)="navigateToSettings()">
+      <app-icon name="settings" [size]="14" class="sidebar-settings-icon" />
+      <span>Configuracion</span>
+    </button>
+  </div>
+
   <!-- ====== Menu Contextual flotante ====== -->
   @if (activeMenuFileId()) {
     <div
@@ -394,19 +408,23 @@
         aria-hidden="true"
         (click)="cancelReplaceImport()"></div>
 
-      <div class="relative z-10 w-[360px] bg-[var(--color-mm-sidebar)] border border-[var(--color-mm-border)] rounded-[14px] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.6),0_0_0_1px_rgba(139,92,246,0.08)] animate-[dialog-in_0.18s_ease-out]">
-        <div class="flex items-center justify-center w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 mb-4">
+      <div
+        class="relative z-10 w-[360px] bg-[var(--color-mm-sidebar)] border border-[var(--color-mm-border)] rounded-[14px] p-6 shadow-[0_24px_60px_rgba(0,0,0,0.6),0_0_0_1px_rgba(139,92,246,0.08)] animate-[dialog-in_0.18s_ease-out]">
+        <div
+          class="flex items-center justify-center w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 mb-4">
           <app-icon name="upload" [size]="20" />
         </div>
 
-        <p id="replace-dialog-title" class="text-[15px] font-semibold text-[var(--color-mm-text)] mb-2">
+        <p
+          id="replace-dialog-title"
+          class="text-[15px] font-semibold text-[var(--color-mm-text)] mb-2">
           Documento ya existe
         </p>
 
         <p class="text-[13px] text-[var(--color-mm-text-secondary)] leading-relaxed mb-6">
           Ya tienes un documento llamado
-          <strong class="text-[var(--color-mm-text)]">{{ pending.title }}</strong>.
-          Reemplazar sobreescribira su contenido actual.
+          <strong class="text-[var(--color-mm-text)]">{{ pending.title }}</strong
+          >. Reemplazar sobreescribira su contenido actual.
         </p>
 
         <div class="flex justify-end gap-2">

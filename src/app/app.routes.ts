@@ -6,5 +6,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/editor/editor-page.component').then((m) => m.EditorPageComponent),
   },
+  {
+    path: 'configuracion',
+    loadComponent: () =>
+      import('./pages/settings/settings-page.component').then((m) => m.SettingsPageComponent),
+    title: 'Configuracion — MarkMax',
+  },
   { path: '**', redirectTo: '' },
 ];

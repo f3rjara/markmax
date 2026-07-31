@@ -2,6 +2,21 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.4.2] - 2026-07-30
+
+### Agregado
+
+- Pagina de configuracion (`/settings`) con componente dedicado y estilos propios.
+- Ruta lazy para la pagina de configuracion en el enrutador principal.
+- Acceso directo a configuracion desde el sidebar mediante icono de ajustes.
+- Nuevo icono `settings` al catalogo de iconos disponibles (`icon.type.ts`).
+
+### Modificado
+
+- `SidebarComponent` actualizado para incluir navegacion hacia la ruta de configuracion.
+
+---
+
 ## [1.4.1] - 2026-07-30
 
 ### Corregido
