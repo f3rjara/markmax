@@ -21,7 +21,7 @@ import { MenuSection } from '../../shared/types/menu.type';
  */
 @Component({
   selector: 'app-sidebar',
-  imports: [IconComponent, ConfirmDialogComponent, ExportDialogComponent, RouterLink],
+  imports: [IconComponent, ConfirmDialogComponent, ExportDialogComponent],
   host: {
     class: 'block h-full overflow-hidden',
   },
