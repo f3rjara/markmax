@@ -9,6 +9,7 @@ import {
   ImportPendingReplace,
 } from '../../core/services/md-file-import.service';
 import { IconComponent } from '../icon/icon.component';
+import { TooltipDirective } from '../../shared/directives/tooltip.directive';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { ExportDialogComponent } from '../export-dialog/export-dialog.component';
 import { TRASH_EXPIRY_DAYS } from '../../shared/constants/text.constants';
@@ -21,7 +22,7 @@ import { MenuSection } from '../../shared/types/menu.type';
  */
 @Component({
   selector: 'app-sidebar',
-  imports: [IconComponent, ConfirmDialogComponent, ExportDialogComponent],
+  imports: [IconComponent, ConfirmDialogComponent, ExportDialogComponent, TooltipDirective],
   host: {
     class: 'block h-full overflow-hidden',
     '(dragover)': 'onDragOver($event)',

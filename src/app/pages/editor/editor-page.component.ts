@@ -15,6 +15,7 @@ import { ImagePickerComponent } from '../../components/image-picker/image-picker
 import { ImageUrlPickerComponent } from '../../components/image-url-picker/image-url-picker.component';
 import { DatabaseService } from '../../core/services/database.service';
 import { ImagePickResult, ImageUrlResult } from '../../shared/models/image-picker.model';
+import { TooltipDirective } from '../../shared/directives/tooltip.directive';
 
 @Component({
   selector: 'app-editor-page',
@@ -29,6 +30,7 @@ import { ImagePickResult, ImageUrlResult } from '../../shared/models/image-picke
     TableBuilderComponent,
     ImagePickerComponent,
     ImageUrlPickerComponent,
+    TooltipDirective,
   ],
   templateUrl: './editor-page.component.html',
 })
