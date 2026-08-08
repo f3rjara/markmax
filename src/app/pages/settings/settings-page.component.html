@@ -1,52 +1,107 @@
 <div class="settings-layout">
   <!-- Panel lateral izquierdo -->
-  <aside class="settings-sidebar" aria-label="Navegacion de configuracion">
-    <div class="settings-sidebar-header">
-      <img
-        src="markmax.svg"
-        width="20"
-        height="20"
-        alt="Markmax Logo"
-        aria-hidden="true"
-        class="object-contain shrink-0" />
-      <span class="text-xs font-semibold uppercase tracking-widest text-mm-text-secondary">
-        MarkMax
-      </span>
+  <aside
+    class="settings-sidebar"
+    [class.settings-sidebar--collapsed]="!uiState.sidebarOpen()"
+    aria-label="Navegacion de configuracion">
+    <div class="settings-sidebar-inner">
+      <div class="settings-sidebar-header mm-drag-region">
+        <div class="flex items-center gap-2 select-none">
+          <img
+            src="markmax.svg"
+            width="20"
+            height="20"
+            alt="Markmax Logo"
+            aria-hidden="true"
+            class="object-contain shrink-0" />
+          <span class="text-xs font-semibold uppercase tracking-widest text-mm-text-secondary">
+            MarkMax
+          </span>
+        </div>
+        <button
+          type="button"
+          class="settings-sidebar-toggle-btn"
+          aria-label="Cerrar panel lateral"
+          appTooltip="Cerrar panel"
+          tooltipShortcut="Mod+B"
+          tooltipPosition="bottom"
+          (click)="toggleSidebar()">
+          <app-icon name="panel-left" [size]="16" />
+        </button>
+      </div>
+
+      <nav aria-label="Menu de configuracion" class="settings-nav-wrapper">
+        <ul class="settings-nav-list" role="list">
+          <li>
+            <button
+              type="button"
+              id="settings-nav-general"
+              class="settings-nav-item"
+              [class.settings-nav-item--active]="activeSection() === 'general'"
+              (click)="showSection('general')">
+              <app-icon name="settings" [size]="15" class="settings-nav-icon" />
+              General
+            </button>
+          </li>
+        </ul>
+
+        <!-- Separador + seccion inferior -->
+        <div class="settings-nav-divider" aria-hidden="true"></div>
+
+        <ul class="settings-nav-list" role="list">
+          <li>
+            <button
+              type="button"
+              id="settings-nav-mis-archivos"
+              class="settings-nav-item"
+              (click)="goToEditor()">
+              <app-icon name="files" [size]="15" class="settings-nav-icon" />
+              Mis archivos
+            </button>
+          </li>
+
+          <li>
+            <button
+              type="button"
+              id="settings-nav-shortcuts"
+              class="settings-nav-item"
+              [class.settings-nav-item--active]="activeSection() === 'shortcuts'"
+              (click)="showSection('shortcuts')">
+              <app-icon name="keyboard" [size]="15" class="settings-nav-icon" />
+              Atajos
+            </button>
+          </li>
+        </ul>
+      </nav>
     </div>
-
-    <nav aria-label="Menu de configuracion">
-      <ul class="settings-nav-list">
-        <li>
-          <button
-            type="button"
-            id="settings-nav-general"
-            class="settings-nav-item settings-nav-item--active"
-            (click)="showGeneralSettings()">
-            <app-icon name="settings" [size]="15" class="settings-nav-icon" />
-            General
-          </button>
-        </li>
-
-        <li>
-          <button
-            type="button"
-            id="settings-nav-mis-archivos"
-            class="settings-nav-item"
-            aria-current="page"
-            (click)="goToEditor()">
-            <app-icon name="files" [size]="15" class="settings-nav-icon" />
-            Mis archivos
-          </button>
-        </li>
-      </ul>
-    </nav>
   </aside>
 
   <!-- Contenido principal -->
   <main class="settings-content" id="settings-main">
     <!-- Cabecera superior derecha con boton cerrar -->
-    <header class="settings-topbar">
-      <h1 class="settings-page-title">Configuracion</h1>
+    <header class="settings-topbar mm-drag-region">
+      <div class="flex items-center gap-3">
+        @if (!uiState.sidebarOpen()) {
+          <button
+            type="button"
+            class="settings-sidebar-open-btn"
+            aria-label="Abrir panel"
+            appTooltip="Abrir panel"
+            tooltipShortcut="Mod+B"
+            tooltipPosition="bottom"
+            (click)="toggleSidebar()">
+            <app-icon name="panel-left" [size]="18" />
+          </button>
+        }
+        <h1 class="settings-page-title">
+          @if (activeSection() === 'general') {
+            Configuracion
+          }
+          @if (activeSection() === 'shortcuts') {
+            Atajos de teclado
+          }
+        </h1>
+      </div>
       <button
         type="button"
         id="settings-close-btn"
@@ -59,7 +114,252 @@
 
     <!-- Zona de contenido -->
     <section class="settings-body" aria-label="Contenido de configuracion">
-      <p class="settings-placeholder">Proximas opciones de configuracion apareceran aqui.</p>
+      @if (activeSection() === 'general') {
+        <p class="settings-placeholder">Proximas opciones de configuracion apareceran aqui.</p>
+      }
+
+      @if (activeSection() === 'shortcuts') {
+        <div class="shortcuts-page">
+          <!-- Intro -->
+          <div class="shortcuts-intro">
+            <p class="shortcuts-intro-text">
+              Estas son las combinaciones de teclas disponibles en MarkMax.
+            </p>
+          </div>
+
+          <!-- Grupo: Archivo -->
+          <section class="shortcuts-group" aria-labelledby="sg-file">
+            <h2 class="shortcuts-group-title" id="sg-file">
+              <app-icon name="file-text" [size]="14" />
+              Archivo
+            </h2>
+            <ul class="shortcuts-list" role="list">
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Guardar cambios</span>
+                <kbd class="mm-kbd-group" [attr.aria-label]="isMac() ? 'Command S' : 'Ctrl S'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">S</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">S</kbd>
+                  }
+                </kbd>
+              </li>
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Nuevo archivo</span>
+                <kbd
+                  class="mm-kbd-group"
+                  [attr.aria-label]="isMac() ? 'Command Option N' : 'Ctrl Alt N'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">&#x2325;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">N</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">Alt</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">N</kbd>
+                  }
+                </kbd>
+              </li>
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc"
+                  >Importar archivo <code class="shortcuts-code">.md</code></span
+                >
+                <kbd class="mm-kbd-group" [attr.aria-label]="isMac() ? 'Command O' : 'Ctrl O'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">O</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">O</kbd>
+                  }
+                </kbd>
+              </li>
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Renombrar archivo activo</span>
+                <kbd class="mm-kbd-group" [attr.aria-label]="isMac() ? 'Command Enter' : 'Ctrl Enter'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd>
+                  }
+                  <kbd class="mm-kbd" aria-hidden="true">&#x23CE;</kbd>
+                </kbd>
+              </li>
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Fijar / desfijar archivo</span>
+                <kbd
+                  class="mm-kbd-group"
+                  [attr.aria-label]="isMac() ? 'Command Shift P' : 'Ctrl Shift P'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">&#x21E7;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">P</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">Shift</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">P</kbd>
+                  }
+                </kbd>
+              </li>
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Archivar archivo activo</span>
+                <kbd
+                  class="mm-kbd-group"
+                  [attr.aria-label]="isMac() ? 'Command Shift Backspace' : 'Ctrl Shift Backspace'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">&#x21E7;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">&#x232B;</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">Shift</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">&#x232B;</kbd>
+                  }
+                </kbd>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Grupo: Vista y navegacion -->
+          <section class="shortcuts-group" aria-labelledby="sg-view">
+            <h2 class="shortcuts-group-title" id="sg-view">
+              <app-icon name="layout" [size]="14" />
+              Vista y navegacion
+            </h2>
+            <ul class="shortcuts-list" role="list">
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Mostrar / ocultar barra lateral</span>
+                <kbd class="mm-kbd-group" [attr.aria-label]="isMac() ? 'Command B' : 'Ctrl B'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">B</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">B</kbd>
+                  }
+                </kbd>
+              </li>
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Alternar Codigo / Vista previa</span>
+                <kbd class="mm-kbd-group" [attr.aria-label]="isMac() ? 'Command E' : 'Ctrl E'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">E</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">E</kbd>
+                  }
+                </kbd>
+              </li>
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Abrir / cerrar herramientas de formato</span>
+                <kbd
+                  class="mm-kbd-group"
+                  [attr.aria-label]="isMac() ? 'Command Shift F' : 'Ctrl Shift F'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">&#x21E7;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">F</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">Shift</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">F</kbd>
+                  }
+                </kbd>
+              </li>
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Ir a Configuracion</span>
+                <kbd
+                  class="mm-kbd-group"
+                  [attr.aria-label]="isMac() ? 'Command Comma' : 'Ctrl Comma'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">,</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">,</kbd>
+                  }
+                </kbd>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Grupo: Editor (CodeMirror) -->
+          <section class="shortcuts-group" aria-labelledby="sg-editor">
+            <h2 class="shortcuts-group-title" id="sg-editor">
+              <app-icon name="code" [size]="14" />
+              Editor de texto
+            </h2>
+            <ul class="shortcuts-list" role="list">
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Buscar en el documento</span>
+                <kbd class="mm-kbd-group" [attr.aria-label]="isMac() ? 'Command F' : 'Ctrl F'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">F</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">F</kbd>
+                  }
+                </kbd>
+              </li>
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Seleccionar siguiente ocurrencia</span>
+                <kbd class="mm-kbd-group" [attr.aria-label]="isMac() ? 'Command D' : 'Ctrl D'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">D</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">D</kbd>
+                  }
+                </kbd>
+              </li>
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Seleccionar todo el contenido</span>
+                <kbd class="mm-kbd-group" [attr.aria-label]="isMac() ? 'Command A' : 'Ctrl A'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">A</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">A</kbd>
+                  }
+                </kbd>
+              </li>
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Deshacer</span>
+                <kbd class="mm-kbd-group" [attr.aria-label]="isMac() ? 'Command Z' : 'Ctrl Z'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">Z</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">Z</kbd>
+                  }
+                </kbd>
+              </li>
+              <li class="shortcuts-item">
+                <span class="shortcuts-desc">Rehacer</span>
+                <kbd
+                  class="mm-kbd-group"
+                  [attr.aria-label]="isMac() ? 'Command Shift Z' : 'Ctrl Y'">
+                  @if (isMac()) {
+                    <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">&#x21E7;</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">Z</kbd>
+                  } @else {
+                    <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd
+                    ><kbd class="mm-kbd" aria-hidden="true">Y</kbd>
+                  }
+                </kbd>
+              </li>
+            </ul>
+          </section>
+        </div>
+      }
     </section>
   </main>
 </div>

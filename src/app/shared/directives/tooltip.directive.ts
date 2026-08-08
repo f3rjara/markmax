@@ -9,7 +9,7 @@ import {
   PLATFORM_ID,
   Renderer2,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, DOCUMENT } from '@angular/common';
 
 /**
  * Registro global de tooltips activos en el DOM.
@@ -41,10 +41,16 @@ export class TooltipDirective implements OnInit, OnDestroy {
   readonly appTooltip = input<string>('');
   readonly tooltipPosition = input<'top' | 'bottom' | 'left' | 'right'>('bottom');
   readonly tooltipDelay = input<number>(400);
+  /**
+   * Shortcut a mostrar en el tooltip. Usa "+" como separador.
+   * Ej: "Mod+S". En Mac se convierte a "⌘ S", en Win/Linux a "Ctrl S".
+   */
+  readonly tooltipShortcut = input<string>('');
 
   private readonly el = inject(ElementRef);
   private readonly renderer = inject(Renderer2);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly doc = inject(DOCUMENT);
 
   readonly tooltipId = `mm-tooltip-${Math.random().toString(36).slice(2, 9)}`;
 
@@ -106,11 +112,42 @@ export class TooltipDirective implements OnInit, OnDestroy {
     removeAllTooltips();
     this.tooltipEl = null;
 
+    const isMac = /Mac|iPhone|iPod|iPad/.test(
+      this.doc.defaultView?.navigator.userAgent ?? ''
+    );
+
     const tooltip = document.createElement('div');
     tooltip.id = this.tooltipId;
     tooltip.setAttribute('role', 'tooltip');
     tooltip.className = `mm-tooltip mm-tooltip--${this.tooltipPosition()}`;
-    tooltip.textContent = label;
+
+    // Texto principal
+    const textSpan = document.createElement('span');
+    textSpan.textContent = label;
+    tooltip.appendChild(textSpan);
+
+    // Teclas del shortcut (si existen)
+    const shortcut = this.tooltipShortcut();
+    if (shortcut) {
+      const parts = shortcut.split('+');
+      const resolvedKeys = parts.map((raw) => this.resolveKey(raw.trim(), isMac));
+
+      const keysWrapper = document.createElement('kbd');
+      keysWrapper.className = 'mm-kbd-group';
+      keysWrapper.setAttribute('aria-label', resolvedKeys.join(' '));
+
+      parts.forEach((raw) => {
+        const key = raw.trim();
+        const resolved = this.resolveKey(key, isMac);
+        const kbd = document.createElement('kbd');
+        kbd.className = 'mm-kbd';
+        kbd.setAttribute('aria-hidden', 'true');
+        kbd.textContent = resolved;
+        keysWrapper.appendChild(kbd);
+      });
+
+      tooltip.appendChild(keysWrapper);
+    }
 
     document.body.appendChild(tooltip);
     activeTooltips.add(tooltip);
@@ -121,6 +158,31 @@ export class TooltipDirective implements OnInit, OnDestroy {
     // Forzar reflow para activar la transicion CSS
     tooltip.getBoundingClientRect();
     tooltip.classList.add('mm-tooltip--visible');
+  }
+
+  /**
+   * Resuelve el nombre de una tecla a su simbolo correcto segun el SO.
+   */
+  private resolveKey(key: string, isMac: boolean): string {
+    const macMap: Record<string, string> = {
+      Mod: '⌘',
+      Meta: '⌘',
+      Alt: '⌥',
+      Shift: '⇧',
+      Ctrl: '⌃',
+      Backspace: '⌫',
+      Enter: '↵',
+      ArrowUp: '↑',
+      ArrowDown: '↓',
+      ArrowLeft: '←',
+      ArrowRight: '→',
+    };
+    const winMap: Record<string, string> = {
+      Mod: 'Ctrl',
+      Meta: 'Win',
+    };
+    if (isMac) return macMap[key] ?? key;
+    return winMap[key] ?? key;
   }
 
   private hideWithAnimation(): void {

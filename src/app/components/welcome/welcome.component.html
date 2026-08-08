@@ -36,11 +36,27 @@
   </div>
 
   <!-- Acción principal -->
-  <button
-    type="button"
-    class="flex items-center gap-2 px-5 py-2.5 mm-btn-primary text-white font-medium rounded-full relative z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500 cursor-pointer"
-    (click)="createFile()">
-    <app-icon name="plus" [size]="16" />
-    Crear primer archivo
-  </button>
+  <div class="flex flex-col items-center gap-2 relative z-10">
+    <button
+      type="button"
+      class="flex items-center gap-2 px-5 py-2.5 mm-btn-primary text-white font-medium rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500 cursor-pointer"
+      (click)="createFile()">
+      <app-icon name="plus" [size]="16" />
+      Crear primer archivo
+    </button>
+    <span
+      class="flex items-center justify-center gap-1.5 text-xs text-mm-text-secondary opacity-60 select-none mt-2">
+      o presiona
+      <kbd class="mm-kbd-group" [attr.aria-label]="isMac() ? 'Command Option N' : 'Ctrl Alt N'">
+        @if (isMac()) {
+          <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd>
+          <kbd class="mm-kbd" aria-hidden="true">&#x2325;</kbd>
+        } @else {
+          <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd>
+          <kbd class="mm-kbd" aria-hidden="true">Alt</kbd>
+        }
+        <kbd class="mm-kbd" aria-hidden="true">N</kbd>
+      </kbd>
+    </span>
+  </div>
 </div>

@@ -1,6 +1,8 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, DestroyRef, computed, inject, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EditorStateService } from '../../core/services/editor-state.service';
+import { UiStateService } from '../../core/services/ui-state.service';
 import { ViewMode } from '../../core/models/view-mode.enum';
 import { CodeEditorComponent } from '../../components/code-editor/code-editor.component';
 import { MarkdownPreviewComponent } from '../../components/markdown-preview/markdown-preview.component';
@@ -36,10 +38,9 @@ import { TooltipDirective } from '../../shared/directives/tooltip.directive';
 })
 export class EditorPageComponent {
   protected readonly editorState = inject(EditorStateService);
+  protected readonly uiState = inject(UiStateService);
   protected readonly db = inject(DatabaseService);
   protected readonly ViewMode = ViewMode;
-  protected readonly sidebarOpen = signal(true);
-  protected readonly toolsMenuOpen = signal(false);
   protected readonly activeFormat = signal<MarkdownFormatType | null>(null);
   protected readonly tableBuilderOpen = signal(false);
   protected readonly imagePickerOpen = signal(false);
@@ -60,10 +61,16 @@ export class EditorPageComponent {
   constructor() {
     // Limpiar listener si el componente se destruye con el menú abierto
     this.destroyRef.onDestroy(() => this.removeOutsideListener());
+
+    this.uiState.toolsMenuRequest$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.openToolsPanel();
+      });
   }
 
   protected toggleSidebar(): void {
-    this.sidebarOpen.update((v) => !v);
+    this.uiState.toggleSidebar();
   }
 
   /** Título dinámico: extrae el encabezado H1 del contenido si el título es genérico. */
@@ -94,7 +101,7 @@ export class EditorPageComponent {
 
   /** Abre el menú (o lo cierra si ya estaba abierto — toggle). */
   protected openToolsPanel(): void {
-    if (this.toolsMenuOpen()) {
+    if (this.uiState.toolsMenuOpen()) {
       this.closeToolsMenu();
       return;
     }
@@ -103,7 +110,7 @@ export class EditorPageComponent {
     if (editor) {
       this.activeFormat.set(editor.getLineContext());
     }
-    this.toolsMenuOpen.set(true);
+    this.uiState.toolsMenuOpen.set(true);
 
     // Diferir el registro del listener para que el click actual que abre el menú
     // no lo cierre inmediatamente.
@@ -112,7 +119,7 @@ export class EditorPageComponent {
 
   /** Cierra el menú y elimina el listener del documento. */
   protected closeToolsMenu(): void {
-    this.toolsMenuOpen.set(false);
+    this.uiState.closeToolsMenu();
     this.removeOutsideListener();
   }
 

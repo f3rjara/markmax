@@ -21,11 +21,6 @@ const svgBuffer = fs.readFileSync(svgPath);
 (async () => {
   for (const size of sizes) {
     const outPath = path.join(iconsDir, `icon-${size}x${size}.png`);
-    await sharp(svgBuffer)
-      .resize(size, size)
-      .png()
-      .toFile(outPath);
-    console.log(`Generado: ${outPath}`);
+    await sharp(svgBuffer).resize(size, size).png().toFile(outPath);
   }
-  console.log('Iconos generados correctamente.');
 })();

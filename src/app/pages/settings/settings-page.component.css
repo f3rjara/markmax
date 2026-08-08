@@ -16,8 +16,8 @@
 
 /* ---- Sidebar izquierdo ---- */
 .settings-sidebar {
-  width: 250px;
-  min-width: 250px;
+  width: 290px;
+  min-width: 290px;
   background: var(--color-mm-sidebar);
   border-right: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
@@ -25,25 +25,89 @@
   height: 100%;
   overflow: hidden;
   flex-shrink: 0;
+  transition:
+    width 0.2s ease-in-out,
+    min-width 0.2s ease-in-out,
+    border-color 0.2s ease-in-out;
+}
+
+.settings-sidebar--collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  border-right-color: transparent;
+}
+
+.settings-sidebar-inner {
+  width: 290px;
+  min-width: 290px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .settings-sidebar-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
   padding: 0 16px;
   height: 60px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
 }
 
-.settings-sidebar-title {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+.settings-sidebar-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
   color: var(--color-mm-text-secondary);
-  user-select: none;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+  flex-shrink: 0;
+}
+
+.settings-sidebar-toggle-btn:hover {
+  background: var(--color-mm-surface-hover);
+  color: var(--color-mm-accent);
+}
+
+.settings-sidebar-toggle-btn:focus-visible {
+  outline: 2px solid var(--color-mm-accent);
+  outline-offset: 2px;
+}
+
+.settings-sidebar-open-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--color-mm-text-secondary);
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+  flex-shrink: 0;
+}
+
+.settings-sidebar-open-btn:hover {
+  background: var(--color-mm-surface-hover);
+  color: var(--color-mm-accent);
+}
+
+.settings-sidebar-open-btn:focus-visible {
+  outline: 2px solid var(--color-mm-accent);
+  outline-offset: 2px;
 }
 
 /* Lista nav sin enumerar */
@@ -169,4 +233,113 @@
   font-size: 13px;
   color: var(--color-mm-text-secondary);
   opacity: 0.6;
+}
+
+/* ---- Nav wrapper para que los grupos queden pegados al tope y al fondo ---- */
+.settings-nav-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  padding-top: 4px;
+}
+
+.settings-nav-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 4px 12px;
+}
+
+/* ---- Pagina de Atajos ---- */
+.shortcuts-page {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 640px;
+}
+
+.shortcuts-intro {
+  padding: 14px 16px;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  border-radius: 10px;
+}
+
+.shortcuts-intro-text {
+  font-size: 13px;
+  color: var(--color-mm-text-secondary);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.shortcuts-intro-text strong {
+  color: var(--color-mm-text);
+  font-weight: 600;
+}
+
+/* Grupo de atajos */
+.shortcuts-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.shortcuts-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-mm-accent);
+  margin: 0 0 8px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.shortcuts-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.shortcuts-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  transition: background 0.12s ease;
+}
+
+.shortcuts-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.shortcuts-desc {
+  font-size: 13px;
+  color: var(--color-mm-text);
+  flex: 1;
+  min-width: 0;
+}
+
+.shortcuts-code {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--color-mm-accent);
+  background: rgba(139, 92, 246, 0.12);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.shortcuts-keys {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
 }

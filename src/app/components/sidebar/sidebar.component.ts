@@ -1,7 +1,9 @@
 import { Component, computed, inject, output, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DOCUMENT } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { EditorStateService } from '../../core/services/editor-state.service';
+import { UiStateService } from '../../core/services/ui-state.service';
 import { ToastService } from '../../core/services/toast.service';
 import { DatabaseService } from '../../core/services/database.service';
 import {
@@ -35,6 +37,7 @@ import { MenuSection } from '../../shared/types/menu.type';
 })
 export class SidebarComponent {
   protected readonly editorState = inject(EditorStateService);
+  protected readonly uiState = inject(UiStateService);
   protected readonly toastService = inject(ToastService);
   protected readonly db = inject(DatabaseService);
   private readonly mdFileImport = inject(MdFileImportService);
@@ -75,8 +78,31 @@ export class SidebarComponent {
   private readonly destroyRef = inject(DestroyRef);
   private outsideClickHandler: ((e: PointerEvent) => void) | null = null;
 
+  /** Detecta si el SO es macOS para mostrar simbolos de teclas correctos. */
+  protected readonly isMac = computed(() =>
+    /Mac|iPhone|iPod|iPad/.test(this.doc.defaultView?.navigator.userAgent ?? '')
+  );
+
   constructor() {
     this.destroyRef.onDestroy(() => this.removeOutsideListener());
+
+    this.uiState.renameRequest$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        const activeId = this.editorState.activeFileId();
+        if (activeId) {
+          if (!this.uiState.sidebarOpen()) {
+            this.uiState.sidebarOpen.set(true);
+          }
+          this.startRename(activeId);
+        }
+      });
+
+    this.uiState.importRequest$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.importFile();
+      });
   }
 
   protected readonly filteredFiles = computed(() => {

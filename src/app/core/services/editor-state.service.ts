@@ -240,7 +240,7 @@ export class EditorStateService {
    * Lo invoca el propio debounce y también cualquier acción que cambie o
    * cierre el archivo activo, para no perder lo escrito en los últimos 400ms.
    */
-  private flushPendingSave(): Promise<void> {
+  flushPendingSave(): Promise<void> {
     const pending = this.pendingSave;
     if (!pending) {
       return Promise.resolve();

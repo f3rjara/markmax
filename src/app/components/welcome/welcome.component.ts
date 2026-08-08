@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { EditorStateService } from '../../core/services/editor-state.service';
 import { IconComponent } from '../icon/icon.component';
 
@@ -15,6 +16,11 @@ import { IconComponent } from '../icon/icon.component';
 })
 export class WelcomeComponent {
   private readonly editorState = inject(EditorStateService);
+  private readonly doc = inject(DOCUMENT);
+
+  protected readonly isMac = computed(() =>
+    /Mac|iPhone|iPod|iPad/.test(this.doc.defaultView?.navigator.userAgent ?? '')
+  );
 
   protected createFile(): void {
     void this.editorState.createFile();

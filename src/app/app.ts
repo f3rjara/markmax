@@ -5,6 +5,7 @@ import { EditorStateService } from './core/services/editor-state.service';
 import { ToastComponent } from './components/toast/toast.component';
 import { UpdateBannerComponent } from './components/update-banner/update-banner.component';
 import { UpdateService } from './core/services/update.service';
+import { HotkeyService } from './core/services/hotkey.service';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +20,7 @@ export class App implements OnInit, OnDestroy {
   private readonly trashCleanup = inject(TrashCleanupService);
   private readonly editorState = inject(EditorStateService);
   private readonly updateService = inject(UpdateService); // Inicializa la escucha de actualizaciones
+  private readonly hotkey = inject(HotkeyService); // Inicializa atajos de teclado y preventDefaults
 
   ngOnInit(): void {
     this.trashCleanup.start((count) => {
