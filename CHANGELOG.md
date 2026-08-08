@@ -2,6 +2,22 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.6.0] - 2026-08-08
+
+### Agregado
+
+- `UiStateService` para centralizar y persistir el estado de la interfaz (apertura y colapso del sidebar).
+- `HotkeyService` para la gestión y escucha de atajos de teclado globales en la aplicación.
+- Sección de "Atajos de teclado" en la página de configuración con atajos adaptados al sistema operativo.
+- Visualización de atajos (`tooltipShortcut`) con etiquetas `<kbd>` estilizadas dentro de la directiva `appTooltip`.
+- Nuevos iconos `keyboard` y `layout` en el catálogo de iconos.
+
+### Modificado
+
+- Sincronización del estado de colapso y control del sidebar entre la vista principal y la página de configuración.
+
+---
+
 ## [1.5.1] - 2026-07-31
 
 ### Agregado
