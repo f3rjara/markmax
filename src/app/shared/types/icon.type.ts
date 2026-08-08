@@ -45,5 +45,7 @@ export type IconName =
   | 'upload'
   | 'upload-cloud'
   | 'settings'
-  | 'files';
+  | 'files'
+  | 'keyboard'
+  | 'layout';
 

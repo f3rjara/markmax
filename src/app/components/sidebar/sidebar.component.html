@@ -1,6 +1,6 @@
 <nav
   id="sidebar-nav"
-  class="relative flex flex-col h-full mm-sidebar-bg border-r border-white/[0.06]"
+  class="relative flex flex-col h-full w-[290px] mm-sidebar-bg border-r border-white/[0.06]"
   aria-label="Archivos">
   <!-- Cabecera -->
   <div
@@ -23,6 +23,7 @@
         class="flex items-center justify-center w-7 h-7 rounded-md text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
         aria-label="Crear nuevo archivo"
         appTooltip="Nuevo archivo"
+        tooltipShortcut="Mod+Alt+N"
         tooltipPosition="bottom"
         (click)="createFile()">
         <app-icon name="plus" [size]="16" />
@@ -32,6 +33,7 @@
         class="flex items-center justify-center w-7 h-7 rounded-md text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
         aria-label="Cargar archivo Markdown"
         appTooltip="Cargar archivo .md"
+        tooltipShortcut="Mod+O"
         tooltipPosition="bottom"
         (click)="importFile()">
         <app-icon name="upload" [size]="16" />
@@ -41,6 +43,7 @@
         class="flex items-center justify-center w-7 h-7 rounded-md text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
         aria-label="Cerrar panel lateral"
         appTooltip="Cerrar panel"
+        tooltipShortcut="Mod+B"
         tooltipPosition="bottom"
         (click)="closeRequest.emit()">
         <app-icon name="panel-left" [size]="16" />
@@ -299,8 +302,21 @@
             role="menuitem"
             class="context-menu-item"
             (click)="togglePin(activeMenuFileId()!)">
-            <app-icon name="pin" [size]="13" class="context-item-icon" />
-            <span>{{ isFilePinned(activeMenuFileId()) ? 'Desfijar' : 'Fijar' }}</span>
+            <span class="context-item-label">
+              <app-icon name="pin" [size]="13" class="context-item-icon" />
+              <span>{{ isFilePinned(activeMenuFileId()) ? 'Desfijar' : 'Fijar' }}</span>
+            </span>
+            <kbd class="context-item-shortcut mm-kbd-group"
+              [attr.aria-label]="isMac() ? 'Command Shift P' : 'Ctrl Shift P'">
+              @if (isMac()) {
+                <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd>
+                <kbd class="mm-kbd" aria-hidden="true">&#x21E7;</kbd>
+              } @else {
+                <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd>
+                <kbd class="mm-kbd" aria-hidden="true">Shift</kbd>
+              }
+              <kbd class="mm-kbd" aria-hidden="true">P</kbd>
+            </kbd>
           </button>
 
           <button
@@ -308,8 +324,20 @@
             role="menuitem"
             class="context-menu-item"
             (click)="startRename(activeMenuFileId()!)">
-            <app-icon name="edit" [size]="13" class="context-item-icon" />
-            <span>Renombrar</span>
+            <span class="context-item-label">
+              <app-icon name="edit" [size]="13" class="context-item-icon" />
+              <span>Renombrar</span>
+            </span>
+            <span class="context-item-shortcut">
+              <kbd class="mm-kbd-group" [attr.aria-label]="isMac() ? 'Command Enter' : 'Ctrl Enter'">
+                @if (isMac()) {
+                  <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd>
+                } @else {
+                  <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd>
+                }
+                <kbd class="mm-kbd" aria-hidden="true">&#x23CE;</kbd>
+              </kbd>
+            </span>
           </button>
 
           <div class="context-separator" role="separator"></div>
@@ -319,8 +347,10 @@
             role="menuitem"
             class="context-menu-item"
             (click)="downloadFile(activeMenuFileId()!)">
-            <app-icon name="download" [size]="13" class="context-item-icon" />
-            <span>Descargar</span>
+            <span class="context-item-label">
+              <app-icon name="download" [size]="13" class="context-item-icon" />
+              <span>Descargar</span>
+            </span>
           </button>
 
           <button
@@ -328,8 +358,22 @@
             role="menuitem"
             class="context-menu-item"
             (click)="archiveFile(activeMenuFileId()!)">
-            <app-icon name="archive" [size]="13" class="context-item-icon" />
-            <span>Archivar</span>
+            <span class="context-item-label">
+              <app-icon name="archive" [size]="13" class="context-item-icon" />
+              <span>Archivar</span>
+            </span>
+            <kbd class="context-item-shortcut mm-kbd-group"
+              [attr.aria-label]="isMac() ? 'Command Shift Backspace' : 'Ctrl Shift Backspace'">
+              @if (isMac()) {
+                <kbd class="mm-kbd" aria-hidden="true">&#x2318;</kbd>
+                <kbd class="mm-kbd" aria-hidden="true">&#x21E7;</kbd>
+                <kbd class="mm-kbd" aria-hidden="true">&#x232B;</kbd>
+              } @else {
+                <kbd class="mm-kbd" aria-hidden="true">Ctrl</kbd>
+                <kbd class="mm-kbd" aria-hidden="true">Shift</kbd>
+                <kbd class="mm-kbd" aria-hidden="true">&#x232B;</kbd>
+              }
+            </kbd>
           </button>
 
           <button
@@ -337,8 +381,10 @@
             role="menuitem"
             class="context-menu-item context-menu-item--danger"
             (click)="trashFile(activeMenuFileId()!)">
-            <app-icon name="trash-2" [size]="13" class="context-item-icon" />
-            <span>Eliminar</span>
+            <span class="context-item-label">
+              <app-icon name="trash-2" [size]="13" class="context-item-icon" />
+              <span>Eliminar</span>
+            </span>
           </button>
         }
 

@@ -5,7 +5,7 @@
   <!-- Sidebar con transición -->
   <div
     class="shrink-0 overflow-hidden transition-[width] duration-200 ease-in-out"
-    [style.width]="sidebarOpen() ? '250px' : '0px'">
+    [style.width]="uiState.sidebarOpen() ? '290px' : '0px'">
     <app-sidebar (closeRequest)="toggleSidebar()" />
   </div>
 
@@ -15,12 +15,13 @@
     <header
       class="mm-drag-region relative z-10 flex items-center gap-4 px-5 h-15 bg-mm-sidebar/80 backdrop-blur-md border-b border-violet-500/20 shrink-0">
       <!-- Botón abrir sidebar (visible solo cuando está cerrado) -->
-      @if (!sidebarOpen()) {
+      @if (!uiState.sidebarOpen()) {
         <button
           type="button"
           class="flex items-center justify-center w-8 h-8 rounded-md shrink-0 text-mm-text-secondary hover:text-mm-accent hover:bg-mm-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
           aria-label="Abrir panel"
           appTooltip="Abrir panel"
+          tooltipShortcut="Mod+B"
           tooltipPosition="bottom"
           (click)="toggleSidebar()">
           <app-icon name="panel-left" [size]="18" />
@@ -54,17 +55,19 @@
               type="button"
               id="tools-menu-trigger"
               class="flex items-center justify-center w-8 h-8 rounded-full border border-mm-border text-mm-text-secondary hover:text-mm-accent hover:border-mm-accent transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mm-accent cursor-pointer"
-              [class.border-mm-accent]="toolsMenuOpen()"
-              [class.text-mm-accent]="toolsMenuOpen()"
-              [attr.aria-expanded]="toolsMenuOpen()"
+              [class.bg-mm-accent]="uiState.toolsMenuOpen()"
+              [class.text-white]="uiState.toolsMenuOpen()"
+              [class.border-mm-accent]="uiState.toolsMenuOpen()"
+              [attr.aria-expanded]="uiState.toolsMenuOpen()"
               aria-haspopup="menu"
               aria-label="Abrir herramientas rapidas"
               appTooltip="Herramientas de formato"
+              tooltipShortcut="Mod+Shift+F"
               tooltipPosition="bottom"
               (click)="openToolsPanel()">
               <app-icon name="plus" [size]="16" />
             </button>
-            @if (toolsMenuOpen()) {
+            @if (uiState.toolsMenuOpen()) {
               <app-markdown-tools-menu
                 [activeFormat]="activeFormat()"
                 (toolSelected)="onToolSelected($event)"
@@ -89,6 +92,7 @@
               "
               [attr.aria-pressed]="editorState.viewMode() === ViewMode.Code"
               appTooltip="Vista de codigo"
+              tooltipShortcut="Mod+E"
               tooltipPosition="bottom"
               (click)="setViewMode(ViewMode.Code)">
               <app-icon name="code" [size]="13" />
@@ -104,6 +108,7 @@
               "
               [attr.aria-pressed]="editorState.viewMode() === ViewMode.Preview"
               appTooltip="Vista previa"
+              tooltipShortcut="Mod+E"
               tooltipPosition="bottom"
               (click)="setViewMode(ViewMode.Preview)">
               <app-icon name="eye" [size]="13" />

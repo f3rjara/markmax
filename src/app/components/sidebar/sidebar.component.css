@@ -28,6 +28,7 @@
 .context-menu-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   width: 100%;
   padding: 6px 8px;
@@ -78,7 +79,23 @@
 .context-separator {
   height: 1px;
   background: var(--color-mm-border);
-  margin: 4px;
+  margin: 3px 4px;
+}
+
+/* Grupo icono + label dentro del item */
+.context-item-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Shortcut en menu contextual: solo posicionamiento */
+.context-item-shortcut {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-left: 12px;
 }
 
 /* Secciones fijas del sidebar */
