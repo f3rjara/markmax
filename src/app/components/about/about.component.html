@@ -1,0 +1,99 @@
+<div class="about-container">
+  <!-- Tarjeta Principal de Presentacion -->
+  <div class="about-card">
+    <!-- Contenedor del Logo -->
+    <div class="about-logo-wrapper">
+      <img
+        ngSrc="markmax.svg"
+        width="64"
+        height="64"
+        alt="Logo de Markmax"
+        priority
+        class="about-logo" />
+    </div>
+
+    <!-- Titulo y Version -->
+    <h1 class="about-title">Acerca de Markmax</h1>
+    <div class="about-version-badge">
+      <span>v{{ appVersion }} ({{ osName() }})</span>
+    </div>
+
+    <!-- Descripcion Corta -->
+    <p class="about-description">
+      Un editor de Markdown profesional y local-first, diseñado para ser rápido, privado y facilitar la escritura técnica.
+    </p>
+
+    <!-- Seccion: Informacion de Sistema -->
+    <section class="about-section" aria-labelledby="section-system-title">
+      <h2 class="about-section-title" id="section-system-title">
+        <app-icon name="info" [size]="16" class="about-section-icon" />
+        Información del sistema
+      </h2>
+      <div class="about-grid">
+        <div class="about-grid-item">
+          <span class="about-grid-label">Versión de la app</span>
+          <span class="about-grid-value">v{{ appVersion }}</span>
+        </div>
+        <div class="about-grid-item">
+          <span class="about-grid-label">Fecha de compilación</span>
+          <span class="about-grid-value">{{ buildDate }}</span>
+        </div>
+        <div class="about-grid-item">
+          <span class="about-grid-label">Tipo de almacenamiento</span>
+          <span class="about-grid-value">{{ storageType }}</span>
+        </div>
+        <div class="about-grid-item">
+          <span class="about-grid-label">Licencia</span>
+          <span class="about-grid-value">{{ licenseType }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seccion: Filosofia -->
+    <section class="about-section" aria-labelledby="section-philosophy-title">
+      <h2 class="about-section-title" id="section-philosophy-title">
+        <app-icon name="layout" [size]="16" class="about-section-icon" />
+        Filosofía
+      </h2>
+      <p class="about-philosophy-text">
+        Creado para desarrolladores y redactores técnicos que exigen un rendimiento sin latencia y una soberanía total de sus datos. Todo el análisis y renderizado se realiza localmente en tu navegador. Creemos que tus pensamientos te pertenecen y deben permanecer completamente fuera de línea (offline).
+      </p>
+    </section>
+
+    <!-- Enlaces de Interes -->
+    <div class="about-actions">
+      <a
+        href="https://github.com/f3rjara/markmax#readme"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="about-action-btn"
+        aria-label="Ver la documentacion oficial de Markmax, abre en nueva pestaña">
+        <app-icon name="file-text" [size]="15" />
+        Documentación
+      </a>
+      <a
+        href="https://github.com/f3rjara/markmax"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="about-action-btn"
+        aria-label="Ver el repositorio de codigo fuente de Markmax en GitHub, abre en nueva pestaña">
+        <app-icon name="code" [size]="15" />
+        Repositorio de GitHub
+      </a>
+      <a
+        href="https://github.com/f3rjara/markmax/releases"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="about-action-btn"
+        aria-label="Ver las notas de version de Markmax, abre en nueva pestaña">
+        <app-icon name="check-circle" [size]="15" />
+        Notas de versión
+      </a>
+    </div>
+  </div>
+
+  <!-- Copyright / Footer -->
+  <footer class="about-footer">
+    <p>© 2026 MARKMAX CONTRIBUTORS</p>
+  </footer>
+</div>

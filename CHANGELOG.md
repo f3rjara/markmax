@@ -2,6 +2,16 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.7.0] - 2026-08-22
+
+### Agregado
+
+- Componente `AboutComponent` ("Acerca de") en la sección "General" para mostrar la información del sistema (versión, fecha de compilación, almacenamiento IndexedDB y licencia GPLv3), filosofía del editor y enlaces de interés.
+
+### Corregido
+
+- Responsividad del componente `AboutComponent` en pantallas estrechas mediante la optimización de los espaciados, el colapso del grid de datos y la alineación en bloque de las acciones en móvil.
+
 ## [1.6.0] - 2026-08-08
 
 ### Agregado
