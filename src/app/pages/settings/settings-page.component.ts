@@ -4,6 +4,7 @@ import { IconComponent } from '../../components/icon/icon.component';
 import { TooltipDirective } from '../../shared/directives/tooltip.directive';
 import { UiStateService } from '../../core/services/ui-state.service';
 import { DOCUMENT } from '@angular/common';
+import { AboutComponent } from '../../components/about/about.component';
 
 /**
  * Pagina de Configuracion de la aplicacion.
@@ -11,7 +12,7 @@ import { DOCUMENT } from '@angular/common';
  */
 @Component({
   selector: 'app-settings-page',
-  imports: [IconComponent, TooltipDirective],
+  imports: [IconComponent, TooltipDirective, AboutComponent],
   templateUrl: './settings-page.component.html',
   styleUrl: './settings-page.component.css',
 })
