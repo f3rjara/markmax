@@ -29,16 +29,16 @@ export const editorTheme = EditorView.theme({
     borderLeftColor: '#89B4FA',
   },
 
-  '.cm-selectionBackground': {
-    background: '#313244',
+  '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': {
+    backgroundColor: 'rgba(137, 180, 250, 0.4) !important',
   },
 
   '.cm-activeLine': {
-    background: '#181825',
+    backgroundColor: 'rgba(255, 255, 255, 0.04) !important',
   },
 
   '.cm-activeLineGutter': {
-    background: '#181825',
+    backgroundColor: '#181825',
   },
 
   '.cm-gutters': {
