@@ -2,6 +2,12 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.7.1] - 2026-08-22
+
+### Corregido
+
+- Visibilidad de la selección de texto en el editor CodeMirror cuando se usan temas que definen un color opaco para la línea activa (ej. Dracula, Tomorrow, Birds Of Paradise). Se ajustó `.cm-activeLine` para forzar transparencia y `.cm-selectionBackground` a un azul prominente.
+
 ## [1.7.0] - 2026-08-22
 
 ### Agregado

@@ -79,7 +79,7 @@ export const DEFAULT_CODE_PALETTE: CodeHighlightPalette = {
   number: '#E84393', // Rosa/Fucsia electrico — Numeros
   nullish: '#00CEC9', // Turquesa/Cian — null/true/false/None
   name: '#DFE6E9', // Gris muy claro — Identificadores genericos (comandos bash, nombres python)
-  controlKeyword: '#D63031', // Rojo intenso — if/for/return/while
+  controlKeyword: '#ff5152', // Rojo  — if/for/return/while
   definitionKeyword: '#74B9FF', // Azul cielo electrico — const/function/class/def
   moduleKeyword: '#A29BFE', // Lavanda/Morado claro — import/export/from
   arithmeticOperator: '#81ECEC', // Cian claro — +, -, *, /
