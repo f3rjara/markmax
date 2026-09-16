@@ -12,7 +12,9 @@ import {
 import { EditorView } from '@codemirror/view';
 import { EditorState, SelectionRange } from '@codemirror/state';
 import { MarkdownFormatType } from '../../core/models/markdown-format.model';
-import { buildEditorExtensions } from './codemirror-extensions';
+import { SettingsService } from '../../core/services/settings.service';
+import { EDITOR_THEMES, DEFAULT_THEME_NAME } from './codemirror-themes';
+import { themeCompartment, buildEditorExtensions } from './codemirror-extensions';
 import { FORMAT_ACTIONS } from './format-actions';
 
 @Component({
@@ -27,6 +29,7 @@ export class CodeEditorComponent implements OnDestroy {
 
   private readonly editorHost = viewChild.required<ElementRef<HTMLDivElement>>('editorHost');
   private readonly hostEl = inject(ElementRef);
+  private readonly settingsService = inject(SettingsService);
 
   private view: EditorView | null = null;
   private isUpdatingFromOutside = false;
@@ -36,6 +39,16 @@ export class CodeEditorComponent implements OnDestroy {
   constructor() {
     afterNextRender(() => {
       this.initEditor();
+    });
+
+    effect(() => {
+      const activeTheme = this.settingsService.theme();
+      if (this.view) {
+        const themeExtension = EDITOR_THEMES[activeTheme] ?? EDITOR_THEMES[DEFAULT_THEME_NAME];
+        this.view.dispatch({
+          effects: themeCompartment.reconfigure(themeExtension),
+        });
+      }
     });
 
     effect(() => {
@@ -237,11 +250,12 @@ export class CodeEditorComponent implements OnDestroy {
   }
 
   private initEditor(): void {
+    const initialTheme = this.settingsService.theme();
     const extensions = buildEditorExtensions((content) => {
       if (!this.isUpdatingFromOutside) {
         this.contentChange.emit(content);
       }
-    });
+    }, initialTheme);
 
     const state = EditorState.create({
       doc: this.content(),

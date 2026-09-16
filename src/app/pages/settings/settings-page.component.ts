@@ -5,6 +5,7 @@ import { TooltipDirective } from '../../shared/directives/tooltip.directive';
 import { UiStateService } from '../../core/services/ui-state.service';
 import { DOCUMENT } from '@angular/common';
 import { AboutComponent } from '../../components/about/about.component';
+import { SettingsThemeComponent } from './settings-theme.component';
 
 /**
  * Pagina de Configuracion de la aplicacion.
@@ -12,7 +13,7 @@ import { AboutComponent } from '../../components/about/about.component';
  */
 @Component({
   selector: 'app-settings-page',
-  imports: [IconComponent, TooltipDirective, AboutComponent],
+  imports: [IconComponent, TooltipDirective, AboutComponent, SettingsThemeComponent],
   templateUrl: './settings-page.component.html',
   styleUrl: './settings-page.component.css',
 })
@@ -21,7 +22,7 @@ export class SettingsPageComponent {
   private readonly doc = inject(DOCUMENT);
   protected readonly uiState = inject(UiStateService);
 
-  protected readonly activeSection = signal<'general' | 'shortcuts'>('general');
+  protected readonly activeSection = signal<'general' | 'appearance' | 'shortcuts'>('general');
 
   /** Detecta si el sistema operativo es macOS. */
   protected readonly isMac = computed(() => {
@@ -33,7 +34,7 @@ export class SettingsPageComponent {
     void this.router.navigate(['/']);
   }
 
-  protected showSection(section: 'general' | 'shortcuts'): void {
+  protected showSection(section: 'general' | 'appearance' | 'shortcuts'): void {
     this.activeSection.set(section);
   }
 

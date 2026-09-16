@@ -10,7 +10,8 @@ import {
   keymap,
   EditorView,
 } from '@codemirror/view';
-import { EditorState, Extension, Prec } from '@codemirror/state';
+import { EditorState, Extension, Prec, Compartment } from '@codemirror/state';
+export const themeCompartment = new Compartment();
 import { syntaxHighlighting, bracketMatching } from '@codemirror/language';
 import { history, historyKeymap } from '@codemirror/commands';
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
@@ -59,7 +60,7 @@ export function buildEditorExtensions(
   return [
     baseSetup,
     markdown({ codeLanguages: languages }),
-    colorTheme,
+    themeCompartment.of(colorTheme),
     Prec.highest(syntaxHighlighting(markdownHighlightStyle)),
     Prec.highest(syntaxHighlighting(codeHighlightStyle)),
     EditorView.updateListener.of((update) => {

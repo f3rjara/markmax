@@ -43,6 +43,17 @@
               General
             </button>
           </li>
+          <li>
+            <button
+              type="button"
+              id="settings-nav-appearance"
+              class="settings-nav-item"
+              [class.settings-nav-item--active]="activeSection() === 'appearance'"
+              (click)="showSection('appearance')">
+              <app-icon name="layout" [size]="15" class="settings-nav-icon" />
+              Apariencia
+            </button>
+          </li>
         </ul>
 
         <!-- Separador + seccion inferior -->
@@ -95,7 +106,10 @@
         }
         <h1 class="settings-page-title">
           @if (activeSection() === 'general') {
-            Configuracion
+            Configuración
+          }
+          @if (activeSection() === 'appearance') {
+            Apariencia del editor
           }
           @if (activeSection() === 'shortcuts') {
             Atajos de teclado
@@ -116,6 +130,10 @@
     <section class="settings-body" aria-label="Contenido de configuracion">
       @if (activeSection() === 'general') {
         <app-about />
+      }
+
+      @if (activeSection() === 'appearance') {
+        <app-settings-theme />
       }
 
       @if (activeSection() === 'shortcuts') {

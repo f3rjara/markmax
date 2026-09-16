@@ -1,0 +1,43 @@
+<div class="theme-settings-container">
+  <header class="theme-settings-header">
+    <h2 class="theme-settings-title">Tema del editor</h2>
+    <p class="theme-settings-subtitle">
+      Personaliza la apariencia del editor de código CodeMirror según tu preferencia visual.
+    </p>
+  </header>
+
+  <div class="theme-grid" role="radiogroup" aria-label="Temas del editor">
+    @for (t of themes; track t.id) {
+      <button
+        type="button"
+        role="radio"
+        class="theme-card"
+        [class.theme-card--selected]="currentTheme() === t.id"
+        [attr.aria-checked]="currentTheme() === t.id"
+        (click)="selectTheme(t.id)">
+        <div class="theme-card-preview" [style.background-color]="t.bgColor">
+          <div class="theme-preview-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <div class="theme-preview-lines">
+            <div class="line" [style.background-color]="t.accentColor" style="width: 45%"></div>
+            <div class="line opacity-50" [style.background-color]="t.accentColor" style="width: 75%"></div>
+            <div class="line opacity-30" [style.background-color]="t.accentColor" style="width: 60%"></div>
+          </div>
+        </div>
+
+        <div class="theme-card-info">
+          <div class="theme-card-header">
+            <span class="theme-card-name">{{ t.name }}</span>
+            @if (currentTheme() === t.id) {
+              <app-icon name="check-circle" [size]="16" class="theme-check-icon" />
+            }
+          </div>
+          <p class="theme-card-desc">{{ t.description }}</p>
+        </div>
+      </button>
+    }
+  </div>
+</div>

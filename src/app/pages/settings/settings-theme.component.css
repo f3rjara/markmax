@@ -1,0 +1,141 @@
+.theme-settings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 800px;
+}
+
+.theme-settings-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.theme-settings-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-mm-text);
+  margin: 0;
+}
+
+.theme-settings-subtitle {
+  font-size: 13px;
+  color: var(--color-mm-text-secondary);
+  margin: 0;
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.theme-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-mm-surface);
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease-in-out;
+  padding: 0;
+}
+
+.theme-card:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.theme-card:focus-visible {
+  outline: 2px solid var(--color-mm-accent);
+  outline-offset: 2px;
+}
+
+.theme-card--selected {
+  border-color: var(--color-mm-accent);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.25);
+  background: rgba(139, 92, 246, 0.06);
+}
+
+.theme-card-preview {
+  height: 72px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.theme-preview-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.theme-preview-dots .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.theme-preview-dots .red {
+  background: #ff5f56;
+}
+
+.theme-preview-dots .yellow {
+  background: #ffbd2e;
+}
+
+.theme-preview-dots .green {
+  background: #27c93f;
+}
+
+.theme-preview-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.theme-preview-lines .line {
+  height: 4px;
+  border-radius: 2px;
+}
+
+.theme-preview-lines .line.opacity-50 {
+  opacity: 0.5;
+}
+
+.theme-preview-lines .line.opacity-30 {
+  opacity: 0.3;
+}
+
+.theme-card-info {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.theme-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.theme-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-mm-text);
+}
+
+.theme-check-icon {
+  color: var(--color-mm-accent);
+}
+
+.theme-card-desc {
+  font-size: 12px;
+  color: var(--color-mm-text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}

@@ -2,6 +2,19 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.7.2] - 2026-09-15
+
+### Agregado
+
+- Sección "Apariencia" en la página de configuración (`/settings`) para personalizar el tema visual del editor de código.
+- Componente `SettingsThemeComponent` con selector interactivo de temas en cuadrícula, tarjetas con previsualización visual (color de fondo, acento y sintaxis simulada) y soporte accesible (`role="radiogroup"` / `role="radio"`).
+- Soporte para 9 temas de CodeMirror (`thememirror`): Barf, Dracula, Cool Glow, Amy, Bespin, Birds of Paradise, Boys & Girls, Cobalt y Tomorrow.
+- Servicio `SettingsService` para gestionar reactivamente el tema activo mediante Signals y persistir la preferencia en `localStorage`.
+
+### Modificado
+
+- `CodeEditorComponent`: integración de `themeCompartment` (`Compartment` de CodeMirror) para permitir el cambio dinámico y en tiempo real del tema visual sin reiniciar el editor ni perder el estado del documento.
+
 ## [1.7.1] - 2026-08-22
 
 ### Corregido
